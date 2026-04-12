@@ -19,11 +19,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/hardware', [DashboardController::class, 'hardware'])->name('hardware');
     Route::get('/activity_log', [DashboardController::class, 'activityLog'])->name('activity_log');
     Route::get('/laporan', [DashboardController::class, 'laporan'])->name('laporan');
+    
+    Route::get('/laporan/export', [DashboardController::class, 'export'])->name('laporan.export');
+    
     Route::get('/notifikasi', [DashboardController::class, 'notifikasi'])->name('notifikasi');
 });
 
 Route::post('/commands', function (Request $request) {
-
     $request->validate([
         'device_id' => 'required',
         'command' => 'required'
@@ -36,5 +38,4 @@ Route::post('/commands', function (Request $request) {
     ]);
 
     return back()->with('success', 'Command berhasil dikirim');
-
 })->name('commands.store');

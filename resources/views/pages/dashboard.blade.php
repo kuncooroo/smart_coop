@@ -8,10 +8,7 @@
         <p class="text-slate-500">Ringkasan kondisi seluruh kandang hari ini secara real-time.</p>
     </div>
 
-    <!-- Stats Grid -->
-
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-        <!-- Suhu Card -->
         <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100 flex items-center space-x-4">
             <div class="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-500">
                 <i class="fas fa-thermometer-half text-2xl"></i>
@@ -22,7 +19,6 @@
             </div>
         </div>
 
-        <!-- Ayam Masuk -->
         <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100 flex items-center space-x-4">
             <div class="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-500">
                 <i class="fas fa-arrow-down text-2xl"></i>
@@ -34,7 +30,6 @@
             </div>
         </div>
 
-        <!-- Ayam Keluar -->
         <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100 flex items-center space-x-4">
             <div class="w-14 h-14 bg-red-50 rounded-2xl flex items-center justify-center text-red-500">
                 <i class="fas fa-arrow-up text-2xl"></i>
@@ -46,7 +41,6 @@
             </div>
         </div>
 
-        <!-- Status Pintu -->
         <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100 flex items-center space-x-4">
             <div
                 class="w-14 h-14 {{ $anyDoorOpen ? 'bg-orange-50 text-orange-500' : 'bg-slate-900 text-white' }} rounded-2xl flex items-center justify-center transition-colors">
@@ -64,7 +58,6 @@
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <!-- Aktivitas Table -->
         <div class="lg:col-span-2 bg-white rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden">
             <div class="px-8 py-6 border-b border-slate-50 flex justify-between items-center bg-white">
                 <h3 class="text-xl font-bold text-slate-800">Aktivitas Terbaru</h3>
@@ -122,7 +115,6 @@
             </div>
         </div>
 
-        <!-- Quick Info / Tip -->
         <div class="space-y-6">
             <div class="bg-slate-900 rounded-[2.5rem] p-8 text-white relative overflow-hidden shadow-xl">
                 <i class="fas fa-lightbulb absolute -right-4 -top-4 text-white/10 text-9xl rotate-12"></i>

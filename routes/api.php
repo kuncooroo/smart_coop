@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Models\SensorData;
 use App\Models\Command;
 use App\Models\Device;
+use App\Models\ActivityLog;
 
 Route::middleware('apikey')->group(function () {
 
@@ -94,27 +95,39 @@ Route::middleware('apikey')->group(function () {
 
         if ($device) {
 
+            $logDescription = null;
+
             if ($request->command_type == 'OPEN_DOOR') {
                 $device->update(['door_status' => 'TERBUKA']);
+                $logDescription = "Pintu kandang dibuka";
             }
 
             if ($request->command_type == 'CLOSE_DOOR') {
                 $device->update(['door_status' => 'TERTUTUP']);
+                $logDescription = "Pintu kandang ditutup";
             }
 
             if ($request->command_type == 'LIGHT_ON') {
                 $device->update(['light_status' => 'HIDUP']);
+                $logDescription = "Lampu kandang dinyalakan";
             }
 
             if ($request->command_type == 'LIGHT_OFF') {
                 $device->update(['light_status' => 'MATI']);
+                $logDescription = "Lampu kandang dimatikan";
+            }
+
+            if ($logDescription) {
+                ActivityLog::create([
+                    'kandang_id' => $device->kandang_id,
+                    'device_id'  => $device->id,
+                    'category'   => 'device',
+                    'action'     => $request->command_type,
+                    'status'     => 'success',
+                    'description' => $logDescription,
+                ]);
             }
         }
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Command berhasil dieksekusi'
-        ]);
     });
 });
 

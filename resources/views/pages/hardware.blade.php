@@ -40,7 +40,7 @@
                             @endif
                         </div>
                         <div>
-                            <p class="text-sm font-bold text-slate-800">{{ $device->name }}</p>
+                            <p class="text-sm font-bold text-slate-800">{{ $device->device_name }}</p>
                             <p class="text-[10px] font-mono text-slate-400 uppercase tracking-tighter">{{ $device->mac_address ?? 'N/A' }}</p>
                         </div>
                     </div>
