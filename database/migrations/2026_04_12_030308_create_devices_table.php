@@ -13,24 +13,15 @@ return new class extends Migration
     {
         Schema::create('devices', function (Blueprint $table) {
             $table->id();
-
             $table->foreignId('kandang_id')->constrained()->cascadeOnDelete();
-
-            $table->string('device_id')->unique(); // ID dari ESP32
+            $table->string('device_id')->unique(); 
             $table->string('device_name')->nullable();
-
             $table->enum('device_type', ['gateway', 'sensor', 'camera', 'actuator']);
             $table->string('profile_image')->nullable();
-
-            // STATUS REALTIME
             $table->enum('status', ['online', 'offline'])->default('offline');
-
-            // KHUSUS AKTUATOR
             $table->enum('door_status', ['TERBUKA', 'TERTUTUP'])->nullable();
             $table->enum('light_status', ['HIDUP', 'MATI'])->nullable();
-
             $table->timestamp('last_updated')->nullable();
-
             $table->timestamps();
         });
     }

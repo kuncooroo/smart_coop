@@ -10,9 +10,6 @@ use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
-    /**
-     * Halaman Utama (Dashboard)
-     */
     public function index()
     {
         $latestSensor = SensorData::latest('created_at')->first();
@@ -38,9 +35,6 @@ class DashboardController extends Controller
         ));
     }
 
-    /**
-     * Halaman Monitoring Real-time
-     */
     public function monitoring() 
     { 
         $kandangs = Kandang::with(['setting', 'devices', 'sensorData' => function($query) {
@@ -52,12 +46,8 @@ class DashboardController extends Controller
         return view('pages.monitoring', compact('kandangs', 'allSensorData')); 
     }
 
-    /**
-     * Halaman Manajemen Hardware (Dinamis)
-     */
     public function hardware() 
     { 
-        // Mengambil semua perangkat beserta info kandang tempat perangkat tersebut terpasang
         $devices = Device::with('kandang')->get();
         return view('pages.hardware', compact('devices')); 
     }

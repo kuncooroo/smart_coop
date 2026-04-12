@@ -13,22 +13,12 @@ return new class extends Migration
     {
         Schema::create('device_settings', function (Blueprint $table) {
             $table->id();
-
             $table->foreignId('kandang_id')->unique()->constrained()->cascadeOnDelete();
-
-            // TIMER
             $table->time('timer_open')->default('06:00:00');
             $table->time('timer_close')->default('18:00:00');
-
-            // MODE
             $table->boolean('auto_mode')->default(true);
-
-            // NOTIFIKASI
             $table->boolean('notification_active')->default(true);
-
-            // SUHU BATAS
             $table->decimal('temp_threshold', 5, 2)->default(30.00);
-
             $table->timestamps();
         });
     }

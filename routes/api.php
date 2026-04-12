@@ -6,17 +6,8 @@ use App\Models\SensorData;
 use App\Models\Command;
 use App\Models\Device;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes - Smart Chicken Coop (FINAL)
-|--------------------------------------------------------------------------
-*/
-
 Route::middleware('apikey')->group(function () {
 
-    /**
-     * 1. INGEST DATA (ESP32 / Python)
-     */
     Route::post('/ingest', function (Request $request) {
 
         $device = \App\Models\Device::where('device_id', $request->device_id)->first();
@@ -43,9 +34,6 @@ Route::middleware('apikey')->group(function () {
         ]);
     });
 
-    /**
-     * 2. KIRIM COMMAND (WEB)
-     */
     Route::post('/command_send', function (Request $request) {
 
         $request->validate([
@@ -66,9 +54,6 @@ Route::middleware('apikey')->group(function () {
         ]);
     });
 
-    /**
-     * 3. WORKER AMBIL COMMAND
-     */
     Route::get('/commands/{device_id}', function ($device_id) {
 
         $cmd = Command::where('status', 'pending')
@@ -82,9 +67,6 @@ Route::middleware('apikey')->group(function () {
         ]);
     });
 
-    /**
-     * 4. WORKER UPDATE COMMAND
-     */
     Route::post('/commands/update', function (Request $request) {
 
         $request->validate([
@@ -104,16 +86,10 @@ Route::middleware('apikey')->group(function () {
             ], 404);
         }
 
-        // =========================
-        // UPDATE COMMAND
-        // =========================
         $cmd->update([
             'status' => 'executed'
         ]);
 
-        // =========================
-        // UPDATE STATUS DEVICE
-        // =========================
         $device = Device::where('device_id', $request->device_id)->first();
 
         if ($device) {
@@ -142,9 +118,6 @@ Route::middleware('apikey')->group(function () {
     });
 });
 
-/**
- * 5. DATA CHART
- */
 Route::get('/chart-data', function () {
 
     $data = SensorData::latest()->take(10)->get();
@@ -158,9 +131,6 @@ Route::get('/chart-data', function () {
     ]);
 });
 
-/**
- * AUTH USER
- */
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');

@@ -3,14 +3,14 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
+use App\Models\Command;
+use Illuminate\Http\Request;
 
-// Rute Login
 Route::middleware('guest')->group(function () {
     Route::get('/', [AuthController::class, 'showLoginForm'])->name('login');
     Route::post('/', [AuthController::class, 'login']);
 });
 
-// Rute yang membutuhkan Login (Dashboard dkk)
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     
@@ -21,3 +21,20 @@ Route::middleware('auth')->group(function () {
     Route::get('/laporan', [DashboardController::class, 'laporan'])->name('laporan');
     Route::get('/notifikasi', [DashboardController::class, 'notifikasi'])->name('notifikasi');
 });
+
+Route::post('/commands', function (Request $request) {
+
+    $request->validate([
+        'device_id' => 'required',
+        'command' => 'required'
+    ]);
+
+    Command::create([
+        'device_id' => $request->device_id,
+        'command_type' => $request->command,
+        'status' => 'pending'
+    ]);
+
+    return back()->with('success', 'Command berhasil dikirim');
+
+})->name('commands.store');

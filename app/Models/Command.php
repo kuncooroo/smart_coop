@@ -13,4 +13,9 @@ class Command extends Model
         'command_type',
         'status'
     ];
+
+    public function device()
+    {
+        return $this->belongsTo(Device::class);
+    }
 }

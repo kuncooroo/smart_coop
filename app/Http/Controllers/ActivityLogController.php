@@ -3,21 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\ActivityLog;
-use App\Models\DoorTimer;
-use App\Models\SystemStatus;
+use App\Models\DeviceSetting;
+use App\Models\Device;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
 class ActivityLogController extends Controller
 {
-    // Tampilkan semua log
     public function index()
     {
         $logs = ActivityLog::latest()->paginate(50);
         return view('activity_logs', compact('logs'));
     }
 
-    // Simpan log manual / worker
     public function store(Request $request)
     {
         $data = $request->validate([
@@ -28,43 +26,65 @@ class ActivityLogController extends Controller
         ]);
 
         $log = ActivityLog::create($data);
-        return response()->json(['success' => true, 'log' => $log]);
+
+        return response()->json([
+            'success' => true,
+            'log' => $log
+        ]);
     }
 
-    // Eksekusi timer buka/tutup pintu
     public function runDoorTimers()
     {
-        $timers = DoorTimer::where('enabled', true)->get();
+        $settings = DeviceSetting::where('auto_mode', true)->get();
+
         $now = Carbon::now()->format('H:i');
 
-        foreach ($timers as $timer) {
-            $status = SystemStatus::firstOrCreate(['device_id' => $timer->device_id]);
+        foreach ($settings as $setting) {
 
-            if ($timer->open_time && $timer->open_time == $now && $status->door_status != 'open') {
-                $status->door_status = 'open';
-                $status->save();
+            $device = Device::where('kandang_id', $setting->kandang_id)
+                ->where('device_type', 'actuator')
+                ->first();
 
-                ActivityLog::create([
-                    'device_id' => $timer->device_id,
-                    'action' => 'OPEN_DOOR',
-                    'source' => 'worker',
-                    'notes' => 'Timer otomatis buka pintu'
-                ]);
+            if (!$device) continue;
+
+            if ($setting->timer_open && $setting->timer_open == $now) {
+
+                if ($device->door_status != 'TERBUKA') {
+
+                    $device->update([
+                        'door_status' => 'TERBUKA'
+                    ]);
+
+                    ActivityLog::create([
+                        'device_id' => $device->device_id,
+                        'action' => 'OPEN_DOOR',
+                        'source' => 'worker',
+                        'notes' => 'Timer otomatis buka pintu'
+                    ]);
+                }
             }
 
-            if ($timer->close_time && $timer->close_time == $now && $status->door_status != 'closed') {
-                $status->door_status = 'closed';
-                $status->save();
+            if ($setting->timer_close && $setting->timer_close == $now) {
 
-                ActivityLog::create([
-                    'device_id' => $timer->device_id,
-                    'action' => 'CLOSE_DOOR',
-                    'source' => 'worker',
-                    'notes' => 'Timer otomatis tutup pintu'
-                ]);
+                if ($device->door_status != 'TERTUTUP') {
+
+                    $device->update([
+                        'door_status' => 'TERTUTUP'
+                    ]);
+
+                    ActivityLog::create([
+                        'device_id' => $device->device_id,
+                        'action' => 'CLOSE_DOOR',
+                        'source' => 'worker',
+                        'notes' => 'Timer otomatis tutup pintu'
+                    ]);
+                }
             }
         }
 
-        return response()->json(['success' => true]);
+        return response()->json([
+            'success' => true,
+            'message' => 'Timer dijalankan'
+        ]);
     }
 }

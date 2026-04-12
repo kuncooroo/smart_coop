@@ -13,16 +13,12 @@ return new class extends Migration
     {
         Schema::create('activity_logs', function (Blueprint $table) {
             $table->id();
-
             $table->foreignId('kandang_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('device_id')->nullable()->constrained('devices')->nullOnDelete();
-
-            $table->string('category'); // sensor, gate, light, system
-            $table->string('action');   // contoh: "pintu dibuka"
-
+            $table->string('category'); 
+            $table->string('action');   
             $table->enum('status', ['info', 'success', 'warning', 'danger'])->default('info');
             $table->text('description')->nullable();
-
             $table->timestamps();
         });
     }
