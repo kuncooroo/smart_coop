@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('commands', function (Blueprint $table) {
             $table->id();
-            $table->string('device_id');
-            $table->string('command_type');
+            $table->string('device_id', 50)->nullable();
+            $table->string('command_type', 50)->nullable();
             $table->enum('status', ['pending', 'executed'])->default('pending');
-            $table->timestamps();
+            $table->timestamp('created_at')->useCurrent();
         });
     }
 

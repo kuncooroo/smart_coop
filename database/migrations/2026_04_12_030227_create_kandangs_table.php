@@ -11,13 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('sensor_data', function (Blueprint $table) {
+        Schema::create('kandangs', function (Blueprint $table) {
             $table->id();
-            $table->string('device_id');
-            $table->float('temperature');
-            $table->boolean('chicken_detected');
-            $table->integer('chicken_in');
-            $table->integer('chicken_out');
+            $table->string('name');
+            $table->string('code')->unique();
+            $table->string('image')->nullable();
+            $table->integer('capacity')->default(0);
+
+            $table->time('timer_open')->nullable();
+            $table->time('timer_close')->nullable();
+
             $table->timestamps();
         });
     }
@@ -27,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('sensor_data');
+        Schema::dropIfExists('kandangs');
     }
 };
