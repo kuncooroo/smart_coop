@@ -47,7 +47,7 @@ body { font-family: 'Inter', sans-serif; }
         </a>
 
         <a href="{{ route('activity_log') }}"
-            class="flex items-center space-x-3 p-3.5 rounded-xl transition {{ request()->routeIs('activity-log') ? 'bg-orange-600 text-white shadow-lg shadow-orange-600/20' : 'text-slate-400 hover:bg-slate-800/50' }}">
+            class="flex items-center space-x-3 p-3.5 rounded-xl transition {{ request()->routeIs('activity_log') ? 'bg-orange-600 text-white shadow-lg shadow-orange-600/20' : 'text-slate-400 hover:bg-slate-800/50' }}">
             <i class="fas fa-history w-5"></i>
             <span class="font-medium">Activity Log</span>
         </a>

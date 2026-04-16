@@ -20,15 +20,17 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'username',
-        'full_name',
         'email',
         'password',
-        'role',
-        'profile_image',
-        'is_active',
-        'last_login'
+        'nama_lengkap',
+        'no_hp',
+        'jenis_kelamin',
+        'provinsi_id',
+        'kota_id',
+        'kecamatan_id',
+        'alamat_lengkap',
+        'profile',
     ];
-
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -51,4 +53,19 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    public function provinsi()
+    {
+        return $this->belongsTo(Provinsi::class);
+    }
+
+    public function kota()
+    {
+        return $this->belongsTo(Kota::class);
+    }
+
+    public function kecamatan()
+    {
+        return $this->belongsTo(Kecamatan::class);
+    }
 }
+

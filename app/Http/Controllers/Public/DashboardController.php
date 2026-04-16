@@ -1,6 +1,7 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Public;
+use App\Http\Controllers\Controller;
 
 use App\Models\Kandang;
 use App\Models\SensorData;
@@ -29,7 +30,7 @@ class DashboardController extends Controller
             ->take(6)
             ->get();
 
-        return view('pages.dashboard', compact(
+        return view('Public.dashboard', compact(
             'latestSensor',
             'totalIn',
             'totalOut',
@@ -51,29 +52,29 @@ class DashboardController extends Controller
             ->get()
             ->reverse();
 
-        return view('pages.monitoring', compact('kandangs', 'allSensorData', 'chartData'));
+        return view('Public.monitoring', compact('kandangs', 'allSensorData', 'chartData'));
     }
 
     public function hardware()
     {
         $devices = Device::with('kandang')->get();
-        return view('pages.hardware', compact('devices'));
+        return view('Public.hardware', compact('devices'));
     }
 
     public function activityLog()
     {
         $logs = ActivityLog::with(['kandang', 'device'])->latest('created_at')->paginate(15);
-        return view('pages.activity_log', compact('logs'));
+        return view('Public.activity_log', compact('logs'));
     }
 
     public function laporan()
     {
-        return view('pages.laporan');
+        return view('Public.laporan');
     }
 
     public function notifikasi()
     {
-        return view('pages.notifikasi');
+        return view('Public.notifikasi');
     }
 
     /**

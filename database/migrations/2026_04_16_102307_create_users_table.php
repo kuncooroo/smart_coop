@@ -13,13 +13,18 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('username', 50)->unique();
-            $table->string('password'); 
-            $table->string('full_name', 100)->nullable();
-            $table->string('email', 100)->unique()->nullable();
-            $table->enum('role', ['admin', 'operator', 'viewer'])->default('operator');
-            $table->string('profile_image', 255)->nullable();
-            $table->boolean('is_active')->default(true);
+            $table->string('username')->unique();
+            $table->string('email')->unique();
+            $table->timestamp('email_verified_at')->nullable();
+            $table->string('password');
+            $table->string('nama_lengkap');
+            $table->string('no_hp')->nullable();
+            $table->enum('jenis_kelamin', ['L', 'P'])->nullable();
+            $table->foreignId('provinsi_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('kota_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('kecamatan_id')->nullable()->constrained()->nullOnDelete();
+            $table->text('alamat_lengkap')->nullable();
+            $table->string('profile')->nullable();
             $table->timestamp('last_login')->nullable();
             $table->rememberToken();
             $table->timestamps();

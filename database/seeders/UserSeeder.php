@@ -3,34 +3,45 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
+use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
 {
-    public function run()
+    public function run(): void
     {
-        DB::table('users')->insert([
-            [
-                'username' => 'admin',
-                'password' => Hash::make('admin123'),
-                'full_name' => 'Administrator Utama',
-                'email' => 'admin@smartfarm.com',
-                'role' => 'admin',
-                'is_active' => true,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'username' => 'operator1',
-                'password' => Hash::make('operator123'),
-                'full_name' => 'Operator Kandang 1',
-                'email' => 'operator1@smartfarm.com',
-                'role' => 'operator',
-                'is_active' => true,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]
+        User::create([
+            'username' => 'admin',
+            'email' => 'admin@gmail.com',
+            'password' => Hash::make('123456'),
+
+            'nama_lengkap' => 'Administrator System',
+            'no_hp' => '081234567890',
+            'jenis_kelamin' => 'L',
+
+            'provinsi_id' => null,
+            'kota_id' => null,
+            'kecamatan_id' => null,
+
+            'alamat_lengkap' => 'Jl. Contoh No. 1',
+            'profile' => null,
+        ]);
+
+        User::create([
+            'username' => 'user',
+            'email' => 'user@gmail.com',
+            'password' => Hash::make('123456'),
+
+            'nama_lengkap' => 'User Biasa',
+            'no_hp' => '089876543210',
+            'jenis_kelamin' => 'P',
+
+            'provinsi_id' => null,
+            'kota_id' => null,
+            'kecamatan_id' => null,
+
+            'alamat_lengkap' => 'Jl. User No. 2',
+            'profile' => null,
         ]);
     }
 }
