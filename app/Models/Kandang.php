@@ -30,7 +30,12 @@ class Kandang extends Model
         return $this->hasMany(ActivityLog::class);
     }
     public function setting()
-    {
-        return $this->hasOne(DeviceSetting::class);
-    }
+{
+    return $this->hasOne(DeviceSetting::class, 'kandang_id')->withDefault([
+        'auto_mode' => true,
+        'timer_open' => '06:00:00',
+        'timer_close' => '18:00:00',
+        'temp_threshold' => 30.00
+    ]);
+}
 }

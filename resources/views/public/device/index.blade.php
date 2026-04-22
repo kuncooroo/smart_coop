@@ -25,7 +25,6 @@
             <tbody class="divide-y divide-slate-50">
                 @foreach ($devices as $device)
                     <tr class="hover:bg-slate-50/50 transition-colors">
-                        {{-- Device Info --}}
                         <td class="px-8 py-6">
                             <div class="flex items-center space-x-4">
                                 <div
@@ -51,7 +50,6 @@
                             </div>
                         </td>
 
-                        {{-- Barcode --}}
                         <td class="px-8 py-6">
                             <div
                                 class="bg-white p-2 border border-slate-100 rounded-lg inline-block text-center shadow-sm group hover:border-orange-200 transition-all">
@@ -61,7 +59,6 @@
                             </div>
                         </td>
 
-                        {{-- Location --}}
                         <td class="px-8 py-6">
                             <div class="flex flex-col">
                                 <span
@@ -71,7 +68,6 @@
                             </div>
                         </td>
 
-                        {{-- Status & Health (Versi dengan Keterangan Jelas) --}}
                         <td class="px-8 py-6">
                             <div class="flex flex-col gap-3">
                                 <div class="flex items-center gap-2">
@@ -138,7 +134,6 @@
                                 </div>
                             </div>
                         </td>
-                        {{-- Actions --}}
                         <td class="px-8 py-6">
                             <div class="flex items-center space-x-2">
                                 <a href="{{ route('devices.edit', $device->id) }}"

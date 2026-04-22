@@ -20,7 +20,6 @@ return new class extends Migration
             $table->integer('current_chicken')->default(0);
             $table->time('timer_open')->nullable();
             $table->time('timer_close')->nullable();
-
             $table->timestamps();
         });
     }

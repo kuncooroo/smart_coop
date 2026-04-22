@@ -33,11 +33,9 @@ class DeviceController extends Controller
 
         $data = $request->all();
 
-        // default value
         $data['status'] = 'offline';
         $data['last_online'] = now();
 
-        // upload gambar
         if ($request->hasFile('image')) {
             $data['image'] = $request->file('image')->store('devices', 'public');
         }

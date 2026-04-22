@@ -3,7 +3,6 @@
 
 @section('content')
     <style>
-        /* Menghilangkan icon kalender bawaan browser agar tidak double dengan FontAwesome */
         input[type="date"]::-webkit-inner-spin-button,
         input[type="date"]::-webkit-calendar-picker-indicator {
             position: absolute;

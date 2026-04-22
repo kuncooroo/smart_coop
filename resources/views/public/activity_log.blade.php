@@ -31,7 +31,6 @@
                 <tbody class="divide-y divide-slate-50">
                     @forelse($logs as $log)
                         <tr class="hover:bg-slate-50/50 transition-colors">
-                            {{-- Waktu --}}
                             <td class="px-8 py-5">
                                 <div class="flex flex-col">
                                     <span class="text-sm font-bold text-slate-700">{{ $log->created_at->format('H:i:s') }}</span>
@@ -39,7 +38,6 @@
                                 </div>
                             </td>
 
-                            {{-- Kategori --}}
                             <td class="px-6 py-5">
                                 @php
                                     $catColor = $log->category == 'system' ? 'bg-indigo-50 text-indigo-600 border-indigo-100' : 'bg-slate-50 text-slate-600 border-slate-100';
@@ -49,19 +47,16 @@
                                 </span>
                             </td>
 
-                            {{-- Aksi --}}
                             <td class="px-6 py-5">
                                 <span class="text-sm font-bold text-slate-800 uppercase tracking-tight">{{ $log->action }}</span>
                             </td>
 
-                            {{-- Deskripsi --}}
                             <td class="px-6 py-5">
                                 <p class="text-sm text-slate-500 max-w-xs leading-relaxed">
                                     {{ $log->description ?? '-' }}
                                 </p>
                             </td>
 
-                            {{-- Status --}}
                             <td class="px-8 py-5 text-right">
                                 @php
                                     $statusConfig = [
@@ -101,7 +96,6 @@
             </table>
         </div>
 
-        {{-- Pagination --}}
         @if ($logs->hasPages())
             <div class="px-8 py-6 bg-slate-50/30 border-t border-slate-50">
                 {{ $logs->links() }}
