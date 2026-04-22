@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Public\AuthController;
 use App\Http\Controllers\Public\DashboardController;
+use App\Http\Controllers\Public\DeviceController;
 use App\Models\Command;
 use Illuminate\Http\Request;
 
@@ -20,7 +21,12 @@ Route::middleware('auth')->group(function () {
     
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/monitoring', [DashboardController::class, 'monitoring'])->name('monitoring');
-    Route::get('/hardware', [DashboardController::class, 'hardware'])->name('hardware');
+    Route::get('/devices', [DeviceController::class, 'index'])->name('devices.index');
+    Route::get('/devices/create', [DeviceController::class, 'create'])->name('devices.create');
+    Route::post('/devices', [DeviceController::class, 'store'])->name('devices.store');
+    Route::get('/devices/{id}/edit', [DeviceController::class, 'edit'])->name('devices.edit');
+    Route::put('/devices/{id}', [DeviceController::class, 'update'])->name('devices.update');
+    Route::delete('/devices/{id}', [DeviceController::class, 'destroy'])->name('devices.destroy');
     Route::get('/activity_log', [DashboardController::class, 'activityLog'])->name('activity_log');
     
     Route::get('/laporan', [DashboardController::class, 'laporan'])->name('laporan');

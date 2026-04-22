@@ -264,9 +264,4 @@
             });
         });
     </script>
-    <script>
-        setInterval(() => {
-            location.reload();
-        }, 2000); 
-    </script>
 @endsection

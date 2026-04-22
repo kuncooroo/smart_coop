@@ -49,8 +49,33 @@
         }
 
         .nav-scrolled {
-            background: rgba(45, 71, 57, 0.95);
-            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            transition: all 0.4s ease;
+        }
+
+        .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: -5px;
+            width: 0%;
+            height: 2px;
+            background-color: #8dbb61;
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .nav-link:hover {
+            transform: translateY(-2px);
         }
 
         .btn-organic {
@@ -66,33 +91,80 @@
         .text-light-green {
             color: #8dbb61;
         }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-15px);
+            }
+        }
+
+        .animate-float {
+            animation: float 4s ease-in-out infinite;
+        }
+
+        .scroll-animate {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s ease;
+        }
+
+        .scroll-animate.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
     </style>
 </head>
 
-<body x-data="{ scrolled: false, loginModal: false }" @scroll.window="scrolled = (window.pageYOffset > 20)">
+<body x-data="{ scrolled: false, loginModal: false, showPassword: false }"@scroll.window="scrolled = window.scrollY > 50">
 
-    <nav :class="scrolled ? 'nav-scrolled py-4 shadow-lg' : 'py-6'"
+    <nav :class="scrolled
+        ?
+        'nav-scrolled py-4 shadow-lg text-[#2d4739]' :
+        'py-6 text-white'"
         class="fixed top-0 w-full z-50 transition-all duration-300">
+
         <div class="max-w-7xl mx-auto px-8 flex items-center justify-between">
             <div class="flex items-center space-x-2">
                 <div class="bg-white/10 p-2 rounded-full">
-                    <i class="fas fa-bolt text-white text-lg"></i>
+                    <i class="fas fa-bolt text-lg" :class="scrolled ? 'text-[#2d4739]' : 'text-white'"></i>
                 </div>
-                <span class="font-extrabold text-xl tracking-tight text-white uppercase">SMARTGATE</span>
+
+                <span class="font-extrabold text-xl tracking-tight uppercase"
+                    :class="scrolled ? 'text-[#2d4739]' : 'text-white'">
+                    SMARTGATE
+                </span>
             </div>
 
-            <div class="hidden md:flex items-center space-x-10 text-sm font-medium text-white/90">
-                <a href="#home" class="hover:text-white transition">Home</a>
-                <a href="#about" class="hover:text-white transition">Tentang</a>
-                <a href="#features" class="hover:text-white transition">Produk</a>
-                <a href="#contact" class="hover:text-white transition">Kontak</a>
+            <div class="hidden md:flex items-center space-x-10 text-sm font-medium"
+                :class="scrolled ? 'text-[#2d4739]' : 'text-white/90'">
+
+                <a href="#home" class="nav-link">Home</a>
+                <a href="#about" class="nav-link">Tentang</a>
+                <a href="#features" class="nav-link">Fitur</a>
             </div>
 
             <div>
-                <button @click="loginModal = true"
-                    class="text-white font-bold text-sm border-2 border-white/20 px-6 py-2 rounded-full hover:bg-white hover:text-[#2d4739] transition duration-300">
-                    Masuk
-                </button>
+                @auth
+                    <a href="{{ route('dashboard') }}"
+                        class="text-white font-bold text-sm border-2 border-white/20 px-6 py-2 rounded-full hover:bg-white hover:text-[#2d4739] transition duration-300">
+                        Dashboard
+                    </a>
+                @else
+                    <button @click="loginModal = true"
+                        class="font-bold text-sm border-2 px-6 py-2 rounded-full transition duration-300"
+                        :class="scrolled
+                            ?
+                            'text-[#2d4739] border-[#2d4739]/20 hover:bg-[#2d4739] hover:text-white' :
+                            'text-white border-white/20 hover:bg-white hover:text-[#2d4739]'">
+                        Masuk
+                    </button>
+                @endauth
             </div>
         </div>
     </nav>
@@ -126,9 +198,10 @@
                     </svg>
                 </div>
 
-                <img src="https://images.unsplash.com/photo-1548550023-2bdb3c5beed7"
-                    class="relative z-10 w-full max-w-lg h-[450px] object-cover rounded-[3rem] shadow-2xl border-8 border-white/10"
-                    alt="Smart Farm">
+                <img src="{{ asset('storage/images/ayam2.jpg') }}"
+class="relative z-10 w-full max-w-lg h-[450px] object-cover rounded-[3rem] 
+shadow-2xl border-8 border-white/10 
+transition duration-500 hover:scale-105 animate-float"> 
             </div>
         </div>
 
@@ -149,7 +222,7 @@
     </section>
 
     <section id="about" class="py-24 bg-[#fdfdf5] overflow-hidden relative">
-        <div class="max-w-7xl mx-auto px-8 relative min-h-[500px] flex items-center">
+        <div class="max-w-7xl mx-auto px-8 relative min-h-[500px] flex items-center scroll-animate">
             <div class="grid md:grid-cols-5 gap-12 items-center w-full">
 
                 <div class="flex flex-col items-start md:col-span-3 z-10 relative">
@@ -168,7 +241,7 @@
                         peternak pemula hingga skala industri!
                     </p>
 
-                    <p class="text-slate-500 text-sm leading-relaxed text-left">
+                    <p class="text-slate-600 text-lg leading-relaxed text-left">
                         Kami percaya bahwa digitalisasi agrikultur adalah kunci masa depan pangan. Dengan fitur pantau
                         jarak jauh, Anda tidak perlu lagi khawatir dengan fluktuasi suhu atau keamanan kandang di malam
                         hari.
@@ -186,13 +259,13 @@
         </div>
     </section>
     <section id="features" class="relative py-24 bg-[#fdfdf5] overflow-hidden">
-        <div class="max-w-7xl mx-auto px-8 text-center relative z-10">
+        <div class="max-w-7xl mx-auto px-8 text-center relative z-10 scroll-animate">
 
             <h2 class="text-4xl md:text-5xl font-extrabold text-[#2d4739] mb-20 leading-tight">
                 Tetap <span class="text-[#8dbb61]">#SmartAndEfficient</span> dengan SMARTGATE!
             </h2>
 
-            <div class="grid md:grid-cols-3 gap-12 text-center mb-16">
+            <div class="grid md:grid-cols-3 gap-12 text-center mb-16 scroll-animate">
                 <div class="flex flex-col items-center">
                     <div class="w-24 h-24 mb-6 text-[#2d4739] flex items-center justify-center">
                         <i class="fas fa-seedling text-7xl opacity-80"></i>
@@ -228,7 +301,7 @@
             </div>
 
             <div class="mt-20 pb-20">
-                <a href="#"
+                <a href="https://wa.me/6287785711752?text=Halo%20saya%20tertarik%20dengan%20website%20ini%20https://smartgate.id"
                     class="inline-flex items-center space-x-3 bg-[#8dbb61] text-white px-10 py-4 rounded-full font-extrabold text-lg shadow-[0_10px_30px_-5px_rgba(141,187,97,0.6)] hover:scale-105 transition-transform duration-300">
                     <i class="fas fa-headset"></i>
                     <span>Hubungi Smartgate</span>
@@ -236,50 +309,12 @@
             </div>
 
         </div>
-
-        <style>
-            .curve-inverted {
-                position: absolute;
-                bottom: 0;
-                left: 0;
-                width: 100%;
-                line-height: 0;
-                transform: scaleY(-1);
-            }
-
-            .curve-inverted svg {
-                display: block;
-                width: calc(100% + 1.3px);
-                height: 100px;
-            }
-
-            .curve-inverted .shape-fill {
-                fill: #ffffff;
-            }
-        </style>
-
-        <div class="curve-inverted">
-            <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120"
-                preserveAspectRatio="none">
-                <path
-                    d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5,73.84-4.36,147.54,16.88,218.44,35.26,69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z"
-                    opacity=".25" class="shape-fill"></path>
-                <path
-                    d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z"
-                    opacity=".5" class="shape-fill"></path>
-                <path
-                    d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z"
-                    class="shape-fill"></path>
-            </svg>
-        </div>
-
     </section>
     <section class="bg-[#2d4739] text-white py-24 px-6 md:px-12">
         <div class="max-w-7xl mx-auto text-center">
 
             <h2 class="text-3xl md:text-5xl font-extrabold mb-20 leading-tight tracking-tight">
-                Dipercaya oleh ribuan konsumen sebagai alternatif <br class="hidden md:block"> es krim yang lebih
-                sehat!
+                Dipercaya oleh ratusan peternak sebagai solusi <br class="hidden md:block"> kandang pintar modern!
             </h2>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8 items-start">
@@ -349,9 +384,11 @@
                 <div class="col-span-1 space-y-4 font-medium">
                     <h5 class="font-bold text-[#2d4739] text-base">Kontak Person</h5>
                     <div class="space-y-3">
-                        <p class="flex items-center space-x-3">
-                            <i class="fas fa-map-marker-alt text-[#8dbb61]"></i>
-                            <span>Jl. Teknologi Peternakan No. 1, Malang</span>
+                        <p class="flex items-start space-x-3">
+                            <i class="fas fa-map-marker-alt text-[#8dbb61] mt-1"></i>
+                            <span>
+                                Jl. Veteran No.10-11, Ketawanggede, Kec. Lowokwaru, Kota Malang, Jawa Timur
+                            </span>
                         </p>
                         <p class="flex items-center space-x-3">
                             <i class="fas fa-envelope text-[#8dbb61]"></i>
@@ -359,14 +396,13 @@
                         </p>
                         <p class="flex items-center space-x-3">
                             <i class="fas fa-phone text-[#8dbb61]"></i>
-                            <span>+62 812 3456 789</span>
+                            <span>+62 877 8571 1752</span>
                         </p>
                     </div>
                 </div>
 
                 <div class="col-span-1 space-y-4">
                     <h5 class="font-bold text-[#2d4739] text-base">Media Sosial</h5>
-                    <p>Ikuti perkembangan teknologi terbaru dari kami.</p>
                     <div class="flex space-x-4">
                         <a href="#"
                             class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-xl text-[#2d4739] hover:bg-[#8dbb61] hover:text-white transition">
@@ -374,7 +410,7 @@
                         </a>
                         <a href="#"
                             class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-xl text-[#2d4739] hover:bg-[#8dbb61] hover:text-white transition">
-                            <i class="fab fa-linkedin"></i>
+                            <i class="fab fa-tiktok"></i>
                         </a>
                         <a href="#"
                             class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-xl text-[#2d4739] hover:bg-[#8dbb61] hover:text-white transition">
@@ -393,22 +429,92 @@
 
     <div x-show="loginModal"
         class="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm"
-        style="display: none;">
-        <div class="bg-white p-10 rounded-3xl w-full max-w-md shadow-2xl relative">
+        style="display: none;" @keydown.escape.window="loginModal = false">
+
+        <div class="bg-white p-10 rounded-3xl w-full max-w-md shadow-2xl relative" @click.away="loginModal = false">
             <button @click="loginModal = false" class="absolute top-6 right-6 text-slate-400 hover:text-black">
                 <i class="fas fa-times text-xl"></i>
             </button>
-            <h2 class="text-2xl font-bold text-[#2d4739] mb-6 text-center">Selamat Datang</h2>
-            <form class="space-y-4">
-                <input type="text" placeholder="Username"
-                    class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#8dbb61]">
-                <input type="password" placeholder="Password"
-                    class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#8dbb61]">
-                <button class="w-full btn-organic text-white py-3 rounded-xl font-bold">Masuk Sekarang</button>
+
+            <h2 class="text-2xl font-bold text-[#2d4739] mb-2 text-center">Selamat Datang</h2>
+            <p class="text-center text-slate-500 text-sm mb-6">Masuk untuk mengelola kandang Anda</p>
+
+            @if ($errors->any())
+                <div class="mb-4 p-3 rounded-xl bg-red-50 text-red-600 text-sm">
+                    <ul class="list-disc list-inside">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            <form action="{{ route('login') }}" method="POST">
+                @csrf
+
+                <div>
+                    <label class="block text-xs font-bold text-[#2d4739] uppercase mb-1 ml-1">Username / Email</label>
+                    <input type="text" name="login" value="{{ old('login') }}" required
+                        placeholder="Masukkan username atau email"
+                        class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#8dbb61] transition">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-[#2d4739] uppercase mb-1 ml-1">Password</label>
+
+                    <div class="relative">
+                        <input :type="showPassword ? 'text' : 'password'" name="password" required
+                            placeholder="••••••••"
+                            class="w-full px-4 py-3 pr-12 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#8dbb61] transition">
+
+                        <button type="button" @click="showPassword = !showPassword"
+                            class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#2d4739]">
+
+                            <i :class="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between px-1">
+                    <label class="flex items-center text-sm text-slate-600 cursor-pointer">
+                        <input type="checkbox" name="remember" value="1"{{ old('remember') ? 'checked' : '' }}
+                            class="rounded border-gray-300 text-[#8dbb61] focus:ring-[#8dbb61] mr-2">
+                    </label>
+                    <a href="#" class="text-sm text-[#8dbb61] hover:underline font-medium">Lupa Password?</a>
+                </div>
+
+                <button type="submit" class="w-full btn-organic text-white py-4 rounded-xl font-bold shadow-lg mt-2">
+                    Masuk Sekarang
+                </button>
             </form>
         </div>
     </div>
+    @if ($errors->any())
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const root = document.querySelector('[x-data]');
+                if (root) {
+                    const alpineData = window.Alpine.$data(root);
+                    alpineData.loginModal = true;
+                }
+            });
+        </script>
+    @endif
+    <script>
+        const elements = document.querySelectorAll('.scroll-animate');
 
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('show');
+                }
+            });
+        }, {
+            threshold: 0.2
+        });
+
+        elements.forEach(el => observer.observe(el));
+    </script>
 </body>
 
 </html>

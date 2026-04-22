@@ -22,7 +22,6 @@ class KandangSeeder extends Seeder
             'kandang_id' => $kandang1->id,
             'device_id' => 'DHT22_1',
             'device_name' => 'Sensor Suhu K1',
-            'device_type' => 'sensor',
             'status' => 'online',
         ]);
 
@@ -30,7 +29,6 @@ class KandangSeeder extends Seeder
             'kandang_id' => $kandang1->id,
             'device_id' => 'SERVO_1',
             'device_name' => 'Pintu K1',
-            'device_type' => 'actuator',
             'door_status' => 'TERTUTUP',
             'status' => 'online',
         ]);
@@ -39,7 +37,6 @@ class KandangSeeder extends Seeder
             'kandang_id' => $kandang1->id,
             'device_id' => 'LAMP_1',
             'device_name' => 'Lampu Pemanas K1',
-            'device_type' => 'actuator',
             'light_status' => 'MATI',
             'status' => 'online',
         ]);
@@ -56,7 +53,6 @@ class KandangSeeder extends Seeder
             'kandang_id' => $kandang2->id,
             'device_id' => 'DHT22_2',
             'device_name' => 'Sensor Suhu K2',
-            'device_type' => 'sensor',
             'status' => 'online',
         ]);
 
@@ -64,7 +60,6 @@ class KandangSeeder extends Seeder
             'kandang_id' => $kandang2->id,
             'device_id' => 'SERVO_2',
             'device_name' => 'Pintu K2',
-            'device_type' => 'actuator',
             'door_status' => 'TERTUTUP',
             'status' => 'online',
         ]);
@@ -73,7 +68,6 @@ class KandangSeeder extends Seeder
             'kandang_id' => $kandang2->id,
             'device_id' => 'LAMP_2',
             'device_name' => 'Lampu Pemanas K2',
-            'device_type' => 'actuator',
             'light_status' => 'MATI',
             'status' => 'online',
         ]);

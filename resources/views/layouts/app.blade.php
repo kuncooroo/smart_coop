@@ -15,56 +15,71 @@ body { font-family: 'Inter', sans-serif; }
 </head>
 <body class="bg-[#F8FAFC] flex h-screen overflow-hidden text-slate-800">
 
-<aside class="w-72 bg-[#121927] text-white flex flex-col transition-all duration-300">
-    <div class="p-8 flex items-center space-x-3">
-        <div class="bg-orange-500 p-2 rounded-lg shadow-lg shadow-orange-500/20">
-            <i class="fas fa-bolt text-white text-xl"></i>
+<aside class="w-72 bg-[#121927] text-white flex flex-col transition-all duration-300 shadow-[4px_0_24px_rgba(0,0,0,0.3)] z-20">
+    
+    <div class="p-8 flex items-center space-x-4">
+        <div class="bg-orange-600 w-12 h-12 rounded-full flex items-center justify-center shadow-lg shadow-orange-600/40 ring-4 ring-orange-600/10 transition-transform duration-500 hover:scale-110 hover:rotate-6">
+            <i class="fas fa-door-open text-white text-xl"></i>
         </div>
-        <span class="font-bold text-2xl tracking-tighter">SMARTGATE</span>
+        <div class="flex flex-col">
+            <span class="font-extrabold text-2xl tracking-tighter leading-none uppercase">SMARTGATE</span>
+            <span class="text-[10px] font-bold text-orange-500 tracking-[0.3em] uppercase mt-1">Automatic Cage</span>
+        </div>
     </div>
 
-    <div class="px-6 mb-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-        Menu Utama
+    <div class="px-8 mt-4 mb-4 flex items-center space-x-2">
+        <div class="w-2 h-[2px] bg-orange-600 rounded-full"></div>
+        <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest opacity-80">Dashboard Menu</span>
     </div>
 
-    <nav class="flex-1 px-4 space-y-2 overflow-y-auto">
+    <nav class="flex-1 px-4 space-y-1.5 overflow-y-auto custom-scrollbar">
         <a href="{{ route('dashboard') }}"
-            class="flex items-center space-x-3 p-3.5 rounded-xl transition {{ request()->routeIs('dashboard') ? 'bg-orange-600 text-white shadow-lg shadow-orange-600/20' : 'text-slate-400 hover:bg-slate-800/50' }}">
-            <i class="fas fa-th-large w-5"></i>
-            <span class="font-medium">Dashboard</span>
-        </a>
-        
-        <a href="{{ route('monitoring') }}"
-            class="flex items-center space-x-3 p-3.5 rounded-xl transition {{ request()->routeIs('monitoring') ? 'bg-orange-600 text-white shadow-lg shadow-orange-600/20' : 'text-slate-400 hover:bg-slate-800/50' }}">
-            <i class="fas fa-eye w-5"></i>
-            <span class="font-medium">Monitoring Kandang</span>
+            class="group flex items-center space-x-3 p-3.5 rounded-xl transition-all duration-300 hover:translate-x-2 {{ request()->routeIs('dashboard') ? 'bg-orange-600 text-white shadow-lg shadow-orange-600/30' : 'text-slate-400 hover:bg-slate-800/50 hover:text-white' }}">
+            <div class="w-8 flex justify-center">
+                <i class="fas fa-th-large text-lg transition-all duration-300 group-hover:scale-125 group-hover:rotate-12"></i>
+            </div>
+            <span class="font-bold text-sm">Dashboard</span>
         </a>
 
-        <a href="{{ route('hardware') }}"
-            class="flex items-center space-x-3 p-3.5 rounded-xl transition {{ request()->routeIs('hardware') ? 'bg-orange-600 text-white shadow-lg shadow-orange-600/20' : 'text-slate-400 hover:bg-slate-800/50' }}">
-            <i class="fas fa-microchip w-5"></i>
-            <span class="font-medium">Hardware</span>
+        <a href="{{ route('monitoring') }}"
+            class="group flex items-center space-x-3 p-3.5 rounded-xl transition-all duration-300 hover:translate-x-2 {{ request()->routeIs('monitoring') ? 'bg-orange-600 text-white shadow-lg shadow-orange-600/30' : 'text-slate-400 hover:bg-slate-800/50 hover:text-white' }}">
+            <div class="w-8 flex justify-center">
+                <i class="fas fa-eye text-lg transition-all duration-300 group-hover:scale-125 group-hover:rotate-12"></i>
+            </div>
+            <span class="font-bold text-sm">Monitoring Kandang</span>
+        </a>
+
+        <a href="{{ route('devices.index') }}"
+            class="group flex items-center space-x-3 p-3.5 rounded-xl transition-all duration-300 hover:translate-x-2 {{ request()->routeIs('hardware') ? 'bg-orange-600 text-white shadow-lg shadow-orange-600/30' : 'text-slate-400 hover:bg-slate-800/50 hover:text-white' }}">
+            <div class="w-8 flex justify-center">
+                <i class="fas fa-microchip text-lg transition-all duration-300 group-hover:scale-125 group-hover:rotate-12"></i>
+            </div>
+            <span class="font-bold text-sm">Hardware</span>
         </a>
 
         <a href="{{ route('activity_log') }}"
-            class="flex items-center space-x-3 p-3.5 rounded-xl transition {{ request()->routeIs('activity_log') ? 'bg-orange-600 text-white shadow-lg shadow-orange-600/20' : 'text-slate-400 hover:bg-slate-800/50' }}">
-            <i class="fas fa-history w-5"></i>
-            <span class="font-medium">Activity Log</span>
+            class="group flex items-center space-x-3 p-3.5 rounded-xl transition-all duration-300 hover:translate-x-2 {{ request()->routeIs('activity_log') ? 'bg-orange-600 text-white shadow-lg shadow-orange-600/30' : 'text-slate-400 hover:bg-slate-800/50 hover:text-white' }}">
+            <div class="w-8 flex justify-center">
+                <i class="fas fa-history text-lg transition-all duration-300 group-hover:scale-125 group-hover:rotate-12"></i>
+            </div>
+            <span class="font-bold text-sm">Activity Log</span>
         </a>
 
         <a href="{{ route('laporan') }}"
-            class="flex items-center space-x-3 p-3.5 rounded-xl transition {{ request()->routeIs('laporan') ? 'bg-orange-600 text-white shadow-lg shadow-orange-600/20' : 'text-slate-400 hover:bg-slate-800/50' }}">
-            <i class="fas fa-chart-bar w-5"></i>
-            <span class="font-medium">Laporan Data</span>
+            class="group flex items-center space-x-3 p-3.5 rounded-xl transition-all duration-300 hover:translate-x-2 {{ request()->routeIs('laporan') ? 'bg-orange-600 text-white shadow-lg shadow-orange-600/30' : 'text-slate-400 hover:bg-slate-800/50 hover:text-white' }}">
+            <div class="w-8 flex justify-center">
+                <i class="fas fa-chart-bar text-lg transition-all duration-300 group-hover:scale-125 group-hover:rotate-12"></i>
+            </div>
+            <span class="font-bold text-sm">Laporan Data</span>
         </a>
     </nav>
 
-    <div class="p-6 border-t border-slate-800">
+    <div class="p-6 mx-4 mb-6 rounded-2xl bg-slate-800/40 border border-white/5 group transition-all duration-300 hover:bg-red-500/10 hover:border-red-500/20">
         <form action="{{ route('logout') }}" method="POST">
             @csrf
-            <button type="submit" class="flex items-center space-x-3 text-slate-400 hover:text-red-400 transition w-full group">
-                <i class="fas fa-sign-out-alt rotate-180 group-hover:-translate-x-1 transition-transform"></i>
-                <span class="font-medium">Keluar</span>
+            <button type="submit" class="flex items-center justify-center space-x-3 w-full py-1 text-slate-500 group-hover:text-red-500 transition-colors duration-300">
+                <i class="fas fa-sign-out-alt rotate-180 transition-transform group-hover:-translate-x-2"></i>
+                <span class="text-xs font-black uppercase tracking-widest">Keluar Sistem</span>
             </button>
         </form>
     </div>

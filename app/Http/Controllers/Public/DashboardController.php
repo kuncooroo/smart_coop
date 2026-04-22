@@ -1,8 +1,8 @@
 <?php
 
 namespace App\Http\Controllers\Public;
-use App\Http\Controllers\Controller;
 
+use App\Http\Controllers\Controller;
 use App\Models\Kandang;
 use App\Models\SensorData;
 use App\Models\ActivityLog;
@@ -11,26 +11,30 @@ use Illuminate\Http\Request;
 use App\Exports\SensorExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Schema;
 
 class DashboardController extends Controller
 {
     public function index()
     {
         $latestSensor = SensorData::latest('created_at')->first();
+
         $todaySensors = SensorData::whereDate('created_at', now()->today())->get();
         $totalIn = $todaySensors->sum('chicken_in');
         $totalOut = $todaySensors->sum('chicken_out');
 
-        $anyDoorOpen = Device::where('device_type', 'actuator')
-            ->where('door_status', 'TERBUKA')
-            ->exists();
+        if (Schema::hasColumn('devices', 'door_status')) {
+            $anyDoorOpen = Device::where('door_status', 'TERBUKA')->exists();
+        } else {
+            $anyDoorOpen = false; 
+        }
 
         $recentActivities = ActivityLog::with('kandang')
             ->latest('created_at')
             ->take(6)
             ->get();
 
-        return view('Public.dashboard', compact(
+        return view('public.dashboard', compact(
             'latestSensor',
             'totalIn',
             'totalOut',
@@ -40,12 +44,18 @@ class DashboardController extends Controller
     }
 
     public function monitoring()
-    {        
-        $kandangs = Kandang::with(['setting', 'devices', 'sensorData' => function ($query) {
-            $query->latest()->limit(1);
-        }])->get();
+    {
+        $kandangs = Kandang::with([
+            'devices',
+            'sensorData' => function ($query) {
+                $query->latest()->limit(1);
+            }
+        ])->get();
 
-        $allSensorData = SensorData::with('kandang')->latest()->limit(10)->get();
+        $allSensorData = SensorData::with('kandang')
+            ->latest()
+            ->limit(10)
+            ->get();
 
         $chartData = SensorData::latest()
             ->limit(20)
@@ -55,15 +65,12 @@ class DashboardController extends Controller
         return view('Public.monitoring', compact('kandangs', 'allSensorData', 'chartData'));
     }
 
-    public function hardware()
-    {
-        $devices = Device::with('kandang')->get();
-        return view('Public.hardware', compact('devices'));
-    }
-
     public function activityLog()
     {
-        $logs = ActivityLog::with(['kandang', 'device'])->latest('created_at')->paginate(15);
+        $logs = ActivityLog::with(['kandang', 'device'])
+            ->latest('created_at')
+            ->paginate(15);
+
         return view('Public.activity_log', compact('logs'));
     }
 
@@ -77,38 +84,41 @@ class DashboardController extends Controller
         return view('Public.notifikasi');
     }
 
-    /**
-     * Method baru untuk menangani Export
-     */
     public function export(Request $request)
     {
-        $type = $request->type; 
+        $type = $request->type;
         $kandangId = $request->kandang_id;
         $startDate = $request->start_date;
         $endDate = $request->end_date;
-        
+
         $filename = 'Laporan_Kandang_' . now()->format('Ymd_His');
 
         if ($type === 'excel') {
-            return Excel::download(new SensorExport($kandangId, $startDate, $endDate), $filename . '.xlsx');
+            return Excel::download(
+                new SensorExport($kandangId, $startDate, $endDate),
+                $filename . '.xlsx'
+            );
         }
 
         if ($type === 'pdf') {
             $query = SensorData::with('kandang');
-            
+
             if ($kandangId !== 'all') {
                 $query->where('kandang_id', $kandangId);
             }
+
             if ($startDate) {
                 $query->whereDate('created_at', '>=', $startDate);
             }
+
             if ($endDate) {
                 $query->whereDate('created_at', '<=', $endDate);
             }
-            
+
             $data = $query->latest()->get();
-    
+
             $pdf = Pdf::loadView('pdf.report_sensor', compact('data', 'startDate', 'endDate'));
+
             return $pdf->download($filename . '.pdf');
         }
 

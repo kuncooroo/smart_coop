@@ -16,11 +16,12 @@ return new class extends Migration
             $table->foreignId('kandang_id')->constrained()->cascadeOnDelete();
             $table->string('device_id')->unique(); 
             $table->string('device_name')->nullable();
-            $table->enum('device_type', ['gateway', 'sensor', 'camera', 'actuator']);
             $table->string('profile_image')->nullable();
             $table->enum('status', ['online', 'offline'])->default('offline');
             $table->enum('door_status', ['TERBUKA', 'TERTUTUP'])->nullable();
             $table->enum('light_status', ['HIDUP', 'MATI'])->nullable();
+            $table->enum('health_status', ['EXCELLENT', 'DEGRADED', 'CRITICAL', 'MAINTENANCE'])->default('EXCELLENT');
+            $table->integer('signal_strength')->nullable();
             $table->timestamp('last_updated')->nullable();
             $table->timestamps();
         });

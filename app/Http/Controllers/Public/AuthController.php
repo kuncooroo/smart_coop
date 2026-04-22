@@ -12,7 +12,7 @@ class AuthController extends Controller
 {
     public function showLoginForm()
     {
-        return view('auth.login');
+        return view('home');
     }
 
     public function login(Request $request)
@@ -46,7 +46,7 @@ class AuthController extends Controller
             $user->last_login = now();
             $user->save();
 
-            return redirect()->intended(route('dashboard'))
+            return redirect()->route('dashboard')
                 ->with('success', 'Login berhasil!');
         }
 

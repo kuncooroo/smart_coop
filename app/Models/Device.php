@@ -18,6 +18,10 @@ class Device extends Model
         'last_updated'
     ];
 
+    protected $casts = [
+        'last_updated' => 'datetime',
+    ];
+    
     public function kandang()
     {
         return $this->belongsTo(Kandang::class);
