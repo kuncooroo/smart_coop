@@ -17,7 +17,7 @@
 
     <div class="w-full bg-white rounded-[2rem] shadow-sm border border-slate-100 overflow-hidden">
         <div class="p-6 border-b border-slate-50 bg-slate-50/30">
-            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-[0.2em]">Update Information</h3>
+            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-[0.2em]">Update Informasi</h3>
         </div>
 
         <form action="{{ route('monitoring.update', $kandang->id) }}" method="POST" enctype="multipart/form-data" class="p-8">

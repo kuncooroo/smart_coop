@@ -21,7 +21,7 @@ class Device extends Model
     protected $casts = [
         'last_updated' => 'datetime',
     ];
-    
+
     public function kandang()
     {
         return $this->belongsTo(Kandang::class);
@@ -35,5 +35,14 @@ class Device extends Model
     public function activityLogs()
     {
         return $this->hasMany(ActivityLog::class);
+    }
+    public function deteksis()
+    {
+        return $this->hasMany(Deteksi::class);
+    }
+
+    public function suhus()
+    {
+        return $this->hasMany(Suhu::class);
     }
 }

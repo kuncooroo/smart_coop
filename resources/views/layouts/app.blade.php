@@ -66,7 +66,7 @@
                     <i
                         class="fas fa-microchip text-lg transition-all duration-300 group-hover:scale-125 group-hover:rotate-12"></i>
                 </div>
-                <span class="font-bold text-sm">Hardware</span>
+                <span class="font-bold text-sm">Device</span>
             </a>
 
             <a href="{{ route('activity_log') }}"
@@ -75,7 +75,7 @@
                     <i
                         class="fas fa-history text-lg transition-all duration-300 group-hover:scale-125 group-hover:rotate-12"></i>
                 </div>
-                <span class="font-bold text-sm">Activity Log</span>
+                <span class="font-bold text-sm">Log Aktifitas</span>
             </a>
 
             <a href="{{ route('laporan.index') }}"

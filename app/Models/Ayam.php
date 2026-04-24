@@ -4,16 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class DeviceSetting extends Model
+class Ayam extends Model
 {
     protected $fillable = [
         'kandang_id',
-        'timer_open',
-        'timer_close',
-        'is_set',
-        'auto_mode',
-        'notification_active',
-        'temp_threshold'
+        'direction',
+        'source'
     ];
 
     public function kandang()

@@ -23,13 +23,13 @@
                 class="mr-4 bg-white text-slate-400 w-10 h-10 rounded-xl flex items-center justify-center shadow-sm border border-slate-100 hover:text-orange-500 transition-all">
                 <i class="fas fa-arrow-left"></i>
             </a>
-            <h2 class="text-2xl font-bold text-slate-800 tracking-tight">Add New Device</h2>
+            <h2 class="text-2xl font-bold text-slate-800 tracking-tight">Tambah Device</h2>
         </div>
     </div>
 
     <div class="w-full bg-white rounded-[2rem] shadow-sm border border-slate-100 overflow-hidden">
         <div class="p-6 border-b border-slate-50 bg-slate-50/30">
-            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-[0.2em]">Device Information</h3>
+            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-[0.2em]">Informasi Device</h3>
         </div>
 
         <form action="{{ route('devices.store') }}" method="POST" enctype="multipart/form-data" class="p-8">
@@ -41,7 +41,7 @@
                         <div
                             class="w-full aspect-square rounded-3xl bg-slate-50 border-2 border-dashed border-slate-200 flex flex-col items-center justify-center overflow-hidden relative transition-all group-hover:border-orange-300">
                             <i class="fas fa-camera text-3xl text-slate-200 mb-2"></i>
-                            <span class="text-[10px] text-slate-400 font-bold uppercase">Device Photo</span>
+                            <span class="text-[10px] text-slate-400 font-bold uppercase">Foto Device</span>
                             <div
                                 class="absolute inset-0 bg-slate-900/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all">
                                 <label for="profile_image"
@@ -58,8 +58,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-8">
 
                         <div class="space-y-1 border-b border-slate-200 pb-2 focus-within:border-orange-500 transition-all">
-                            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">Device
-                                Name</label>
+                            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">Nama Device</label>
                             <input type="text" name="device_name" value="{{ old('device_name') }}"
                                 class="w-full py-1 bg-transparent focus:outline-none text-lg text-slate-700 font-semibold uppercase"
                                 placeholder="Contoh: Sensor Suhu A1" required>
@@ -81,7 +80,7 @@
 
                         <div
                             class="space-y-1 border-b border-slate-200 pb-2 focus-within:border-orange-500 transition-all md:col-span-2">
-                            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">Location
+                            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">Lokasi
                                 (Kandang)</label>
                             <select name="kandang_id"
                                 class="w-full py-1 bg-transparent focus:outline-none text-lg text-slate-700 font-semibold appearance-none cursor-pointer"
@@ -95,8 +94,7 @@
 
                         <div
                             class="space-y-1 border-b border-slate-200 pb-2 focus-within:border-orange-500 transition-all relative">
-                            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">Installation
-                                Date</label>
+                            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">Tanggal Instalasi</label>
                             <div class="flex items-center justify-between">
                                 <input type="date" name="installation_date" value="{{ date('Y-m-d') }}"
                                     class="w-full py-1 bg-transparent focus:outline-none text-lg text-slate-700 font-semibold cursor-pointer z-10">
@@ -105,8 +103,7 @@
                         </div>
 
                         <div class="space-y-1" x-data="{ active: true }">
-                            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">Activation
-                                Status</label>
+                            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">Aktifasi Status</label>
                             <div class="flex items-center py-2">
                                 <input type="hidden" name="status" :value="active ? 'aktif' : 'non-aktif'">
                                 <button type="button" @click="active = !active"
@@ -125,8 +122,8 @@
 
                     <div class="mt-12 flex justify-end">
                         <button type="submit"
-                            class="bg-[#002855] hover:bg-orange-600 text-white font-bold py-3 px-10 rounded-xl transition shadow-lg text-sm uppercase tracking-widest">Save
-                            Device</button>
+                            class="bg-[#002855] hover:bg-orange-600 text-white font-bold py-3 px-10 rounded-xl transition shadow-lg text-sm uppercase tracking-widest">Simpan
+                            Device Baru</button>
                     </div>
                 </div>
             </div>

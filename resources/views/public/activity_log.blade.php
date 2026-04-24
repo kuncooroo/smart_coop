@@ -14,7 +14,7 @@
 
     <div class="w-full bg-white rounded-[2rem] shadow-sm border border-slate-100 overflow-hidden">
         <div class="px-8 py-5 bg-slate-50/50 border-b border-slate-100">
-            <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">System Event History</h3>
+            <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Riwayat</h3>
         </div>
 
         <div class="overflow-x-auto">

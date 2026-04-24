@@ -4,20 +4,21 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class DeviceSetting extends Model
+class Suhu extends Model
 {
     protected $fillable = [
         'kandang_id',
-        'timer_open',
-        'timer_close',
-        'is_set',
-        'auto_mode',
-        'notification_active',
-        'temp_threshold'
+        'device_id',
+        'temperature'
     ];
 
     public function kandang()
     {
         return $this->belongsTo(Kandang::class);
+    }
+
+    public function device()
+    {
+        return $this->belongsTo(Device::class);
     }
 }

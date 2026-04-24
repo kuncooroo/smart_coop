@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('devices', function (Blueprint $table) {
             $table->id();
             $table->foreignId('kandang_id')->constrained()->cascadeOnDelete();
-            $table->string('device_id')->unique(); 
+            $table->string('device_id')->unique();
             $table->string('device_name')->nullable();
             $table->string('profile_image')->nullable();
             $table->enum('status', ['online', 'offline'])->default('offline');

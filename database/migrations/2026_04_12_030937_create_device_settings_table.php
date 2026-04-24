@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('kandang_id')->unique()->constrained()->cascadeOnDelete();
             $table->time('timer_open')->default('06:00:00');
             $table->time('timer_close')->default('18:00:00');
+            $table->boolean('is_set')->default(false);
             $table->boolean('auto_mode')->default(true);
             $table->boolean('notification_active')->default(true);
             $table->decimal('temp_threshold', 5, 2)->default(30.00);

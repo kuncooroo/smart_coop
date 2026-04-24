@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
 use App\Models\Kandang;
-use App\Models\Command;
-use App\Models\DeviceSetting;
+// use App\Models\Command;
+// use App\Models\DeviceSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -74,7 +74,7 @@ class MonitoringController extends Controller
         }
 
         $kandang->update($data);
-        return redirect()->route('monitoring.index')->with('success', 'Kandang berhasil diperbarui!');
+        return redirect()->route('monitoring.index')->with('success', 'Profil Kandang berhasil diperbarui!');
     }
 
     public function destroy($id)
@@ -85,10 +85,20 @@ class MonitoringController extends Controller
 
     public function updateSettings(Request $request, $kandang_id)
     {
-        DeviceSetting::updateOrCreate(
+        $request->validate([
+            'timer_open' => 'required',
+            'timer_close' => 'required',
+        ]);
+
+        \App\Models\DeviceSetting::updateOrCreate(
             ['kandang_id' => $kandang_id],
-            ['timer_open' => $request->timer_open, 'timer_close' => $request->timer_close]
+            [
+                'timer_open'  => $request->timer_open,
+                'timer_close' => $request->timer_close,
+                'is_set'      => true, 
+            ]
         );
-        return back()->with('success', 'Jadwal otomatis diperbarui!');
+
+        return redirect()->route('monitoring.index')->with('success', 'Jadwal otomatis berhasil diaktifkan!');
     }
 }
