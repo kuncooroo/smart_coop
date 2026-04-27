@@ -13,9 +13,13 @@ class MonitoringController extends Controller
 {
     public function index()
     {
-        $kandangs = Kandang::with(['devices', 'setting', 'sensorData' => function ($q) {
-            $q->latest()->limit(1);
-        }])->get();
+        $kandangs = Kandang::with([
+            'devices',
+            'setting',
+            'suhus' => function ($q) {
+                $q->latest()->limit(1);
+            }
+        ])->get();
 
         return view('Public.monitoring.index', compact('kandangs'));
     }
@@ -95,7 +99,7 @@ class MonitoringController extends Controller
             [
                 'timer_open'  => $request->timer_open,
                 'timer_close' => $request->timer_close,
-                'is_set'      => true, 
+                'is_set'      => true,
             ]
         );
 

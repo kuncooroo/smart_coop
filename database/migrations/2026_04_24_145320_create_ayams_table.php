@@ -14,8 +14,9 @@ return new class extends Migration
         Schema::create('ayams', function (Blueprint $table) {
             $table->id();
             $table->foreignId('kandang_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('device_id')->nullable()->constrained()->cascadeOnDelete();
             $table->enum('direction', ['IN', 'OUT']); 
-            $table->string('source')->nullable();
+            $table->enum('source', ['CAM', 'ULTRASONIC', 'MANUAL']);
             $table->timestamps();
         });
     }

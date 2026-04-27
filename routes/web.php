@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Public\AuthController;
+use App\Http\Controllers\Public\ProfileController;
 use App\Http\Controllers\Public\DashboardController;
 use App\Http\Controllers\Public\DeviceController;
 use App\Http\Controllers\Public\LaporanController;
@@ -21,7 +22,11 @@ Route::middleware('guest')->group(function () {
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
 
 Route::middleware('auth')->group(function () {
-    
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::get('/api/provinsi', [ProfileController::class, 'getProvinsi']);
+    Route::get('/api/kota/{provinsi_id}', [ProfileController::class, 'getKota']);
+    Route::get('/api/kecamatan/{kota_id}', [ProfileController::class, 'getKecamatan']);
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/monitoring', [MonitoringController::class, 'index'])->name('monitoring.index');
     Route::get('/monitoring/create', [MonitoringController::class, 'create'])->name('monitoring.create');
@@ -42,6 +47,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/laporan/export', [LaporanController::class, 'export'])->name('laporan.export');
     Route::put('/settings/{kandang_id}', [MonitoringController::class, 'update'])->name('settings.update');
     Route::get('/notifikasi', [DashboardController::class, 'notifikasi'])->name('notifikasi');
+    Route::post('/notif-read', function () {
+        auth()->user()->unreadNotifications->markAsRead();
+        return back();
+    })->name('notif.read')->middleware('auth');
     Route::post('/commands', function (Request $request) {
         $request->validate([
             'device_id' => 'required',
@@ -57,7 +66,6 @@ Route::middleware('auth')->group(function () {
         return back()->with('success', 'Perintah berhasil dikirim ke perangkat.');
     })->name('commands.store');
 
-   
-    Route::middleware('can:admin')->prefix('admin')->group(function () {
-    });
+
+    Route::middleware('can:admin')->prefix('admin')->group(function () {});
 });

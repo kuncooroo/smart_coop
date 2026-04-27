@@ -8,6 +8,7 @@ class Ayam extends Model
 {
     protected $fillable = [
         'kandang_id',
+        'device_id',
         'direction',
         'source'
     ];

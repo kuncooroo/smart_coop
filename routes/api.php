@@ -2,7 +2,9 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Models\SensorData;
+use App\Models\Suhu;
+use App\Models\Deteksi;
+use App\Models\Ayam;
 use App\Models\Command;
 use App\Models\Device;
 use App\Models\ActivityLog;
@@ -20,18 +22,38 @@ Route::middleware('apikey')->group(function () {
             ], 404);
         }
 
-        $data = SensorData::create([
-            'kandang_id' => $device->kandang_id,
-            'device_id' => $device->id,
-            'temperature' => $request->temperature,
-            'chicken_detected' => $request->chicken_detected,
-            'chicken_in' => $request->chicken_in,
-            'chicken_out' => $request->chicken_out,
-        ]);
+        if ($request->has('temperature')) {
+            Suhu::create([
+                'kandang_id' => $device->kandang_id,
+                'device_id' => $device->id,
+                'temperature' => $request->temperature
+            ]);
+        }
+
+        if ($request->has('chicken_detected')) {
+
+            $isAyam = $request->chicken_detected;
+
+            Deteksi::create([
+                'kandang_id' => $device->kandang_id,
+                'device_id' => $device->id,
+                'object' => $isAyam ? 'ayam' : 'tidak_ada',
+                'confidence' => $isAyam ? rand(80, 99) / 100 : null,
+                'is_valid' => $isAyam
+            ]);
+
+            if ($isAyam) {
+                Ayam::create([
+                    'kandang_id' => $device->kandang_id,
+                    'device_id' => $device->id,
+                    'direction' => 'IN',
+                    'source' => 'CAM'
+                ]);
+            }
+        }
 
         return response()->json([
-            'status' => 'success',
-            'data' => $data
+            'status' => 'success'
         ]);
     });
 
@@ -133,7 +155,7 @@ Route::middleware('apikey')->group(function () {
 
 Route::get('/chart-data', function () {
 
-    $data = SensorData::latest()->take(10)->get();
+    $data = Suhu::latest()->take(10)->get();
 
     $labels = $data->pluck('created_at')->map(fn($d) => $d->format('H:i'));
     $values = $data->pluck('temperature')->map(fn($t) => (float)$t);

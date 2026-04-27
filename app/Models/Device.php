@@ -45,4 +45,8 @@ class Device extends Model
     {
         return $this->hasMany(Suhu::class);
     }
+    public function ayams()
+    {
+        return $this->hasMany(Ayam::class);
+    }
 }

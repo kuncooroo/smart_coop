@@ -20,11 +20,6 @@ class Kandang extends Model
         return $this->hasMany(Device::class);
     }
 
-    public function sensorData()
-    {
-        return $this->hasMany(SensorData::class);
-    }
-
     public function activityLogs()
     {
         return $this->hasMany(ActivityLog::class);

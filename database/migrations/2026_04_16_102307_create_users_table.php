@@ -20,9 +20,9 @@ return new class extends Migration
             $table->string('nama_lengkap');
             $table->string('no_hp')->nullable();
             $table->enum('jenis_kelamin', ['L', 'P'])->nullable();
-            $table->foreignId('provinsi_id')->nullable()->constrained()->nullOnDelete();
-            $table->foreignId('kota_id')->nullable()->constrained()->nullOnDelete();
-            $table->foreignId('kecamatan_id')->nullable()->constrained()->nullOnDelete();
+            $table->unsignedBigInteger('provinsi_id')->nullable();
+            $table->unsignedBigInteger('kota_id')->nullable();
+            $table->unsignedBigInteger('kecamatan_id')->nullable();
             $table->text('alamat_lengkap')->nullable();
             $table->string('profile')->nullable();
             $table->timestamp('last_login')->nullable();

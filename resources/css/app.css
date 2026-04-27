@@ -1,14 +1,36 @@
-@import 'tailwindcss';
-
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../storage/framework/views/*.php';
-@source '../**/*.blade.php';
-@source '../**/*.js';
-
-@theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
-}
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+    body {
+        @apply font-sans bg-gate-light;
+    }
+    .nav-link {
+        @apply relative transition-all duration-300 hover:-translate-y-0.5;
+    }
+    .nav-link::after {
+        content: "";
+        @apply absolute left-0 -bottom-1 w-0 h-0.5 bg-gate-green transition-all duration-300;
+    }
+    .nav-link:hover::after {
+        @apply w-full;
+    }
+    .btn-organic {
+        @apply bg-gate-green hover:bg-[#7aa552] text-white transition-all duration-300 hover:-translate-y-0.5 active:scale-95;
+    }
+    .animate-float {
+        animation: float 4s ease-in-out infinite;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-15px); }
+    }
+    .scroll-animate {
+        @apply opacity-0 translate-y-10 transition-all duration-700 ease-out;
+    }
+    .scroll-animate.show {
+        @apply opacity-100 translate-y-0;
+    }
+}
