@@ -22,7 +22,10 @@ class KandangSeeder extends Seeder
             'kandang_id' => $kandang1->id,
             'device_id' => 'DHT22_1',
             'device_name' => 'Sensor Suhu K1',
-            'status' => 'online',
+            'status' => 'aktif',
+            'connection_status' => 'online',
+            'health_status' => 'EXCELLENT',
+            'signal_strength' => 90,
         ]);
 
         Device::create([
@@ -30,7 +33,10 @@ class KandangSeeder extends Seeder
             'device_id' => 'SERVO_1',
             'device_name' => 'Pintu K1',
             'door_status' => 'TERTUTUP',
-            'status' => 'online',
+            'status' => 'aktif',
+            'connection_status' => 'online',
+            'health_status' => 'EXCELLENT',
+            'signal_strength' => 80,
         ]);
 
         Device::create([
@@ -38,7 +44,10 @@ class KandangSeeder extends Seeder
             'device_id' => 'LAMP_1',
             'device_name' => 'Lampu Pemanas K1',
             'light_status' => 'MATI',
-            'status' => 'online',
+            'status' => 'aktif',
+            'connection_status' => 'offline',
+            'health_status' => 'DEGRADED',
+            'signal_strength' => 40,
         ]);
 
         $kandang2 = Kandang::create([
@@ -53,7 +62,10 @@ class KandangSeeder extends Seeder
             'kandang_id' => $kandang2->id,
             'device_id' => 'DHT22_2',
             'device_name' => 'Sensor Suhu K2',
-            'status' => 'online',
+            'status' => 'aktif',
+            'connection_status' => 'online',
+            'health_status' => 'EXCELLENT',
+            'signal_strength' => 95,
         ]);
 
         Device::create([
@@ -61,7 +73,10 @@ class KandangSeeder extends Seeder
             'device_id' => 'SERVO_2',
             'device_name' => 'Pintu K2',
             'door_status' => 'TERTUTUP',
-            'status' => 'online',
+            'status' => 'aktif',
+            'connection_status' => 'offline',
+            'health_status' => 'CRITICAL',
+            'signal_strength' => 10,
         ]);
 
         Device::create([
@@ -69,7 +84,10 @@ class KandangSeeder extends Seeder
             'device_id' => 'LAMP_2',
             'device_name' => 'Lampu Pemanas K2',
             'light_status' => 'MATI',
-            'status' => 'online',
+            'status' => 'non-aktif',
+            'connection_status' => 'offline',
+            'health_status' => 'MAINTENANCE',
+            'signal_strength' => 0,
         ]);
     }
 }

@@ -28,6 +28,7 @@
                     $servo = $k->devices->filter(fn($d) => str_contains(strtoupper($d->device_id), 'SERVO'))->first();
                     $lamp = $k->devices->filter(fn($d) => str_contains(strtoupper($d->device_id), 'LAMP'))->first();
                     $setting = $k->setting;
+                    $temp = optional($k->suhus->first())->temperature ?? 0;
                 @endphp
 
                 <div
@@ -36,7 +37,25 @@
                         <img src="{{ $k->image ? asset('storage/' . $k->image) : 'https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?auto=format&fit=crop&q=80&w=400' }}"
                             class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                             alt="{{ $k->name }}">
+                        <div class="absolute top-4 left-4 z-20">
+                            <div
+                                class="px-3 py-1.5 rounded-xl shadow-sm flex items-center gap-2 backdrop-blur
+        {{ $temp < 25 ? 'bg-blue-500/90 text-white' : '' }}
+        {{ $temp >= 25 && $temp <= 30 ? 'bg-emerald-500/90 text-white' : '' }}
+        {{ $temp > 30 ? 'bg-red-500/90 text-white' : '' }}">
 
+                                <i
+                                    class="fas
+            {{ $temp < 25 ? 'fa-snowflake' : '' }}
+            {{ $temp >= 25 && $temp <= 30 ? 'fa-check-circle' : '' }}
+            {{ $temp > 30 ? 'fa-fire' : '' }} text-xs">
+                                </i>
+
+                                <span class="text-[11px] font-black">
+                                    {{ $temp }}°C
+                                </span>
+                            </div>
+                        </div>
                         <div class="absolute top-4 right-4 flex gap-2 z-20">
                             <a href="{{ route('monitoring.edit', $k->id) }}"
                                 class="w-8 h-8 bg-white/90 backdrop-blur text-slate-600 rounded-lg hover:bg-orange-500 hover:text-white transition-all flex items-center justify-center shadow-sm">
@@ -55,46 +74,27 @@
                         <div
                             class="absolute inset-0 bg-gradient-to-t from-[#002855]/90 via-transparent flex flex-col justify-end p-6">
                             <h4 class="text-white font-black text-lg tracking-tight uppercase">{{ $k->name }}</h4>
-                            <p class="text-orange-400 text-[10px] font-black uppercase tracking-[0.2em]">{{ $k->code }}
+                            <p class="text-orange-400 text-[10px] font-black uppercase tracking-[0.2em]">
+                                {{ $k->code }}
                             </p>
                         </div>
                     </div>
 
                     <div class="p-6 space-y-5">
-                        <div class="grid grid-cols-2 gap-3">
-                            <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
-                                <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Populasi</p>
-                                <div class="flex items-center space-x-2">
-                                    <i class="fas fa-users text-[#002855] text-[10px]"></i>
-                                    <span class="text-sm font-extrabold text-slate-800">{{ $k->capacity }} <small
-                                            class="text-[9px] text-slate-400">EKOR</small></span>
-                                </div>
-                            </div>
-                            <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
-                                <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Suhu Unit</p>
-                                <div class="flex items-center space-x-2">
-                                    <i class="fas fa-temperature-high text-orange-500 text-[10px]"></i>
-                                    @php
-                                        $temp = optional($k->suhus->first())->temperature;
-                                    @endphp
+                        <div class="grid grid-cols-3 gap-3">
+                            <div class="col-span-3">
+                                <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">Kapasitas
+                                    Kandang</p>
 
-                                    <div class="flex items-center space-x-2">
-                                        <i
-                                            class="fas
-                                        {{ $temp < 25 ? 'fa-snowflake text-blue-500' : '' }}
-                                        {{ $temp >= 25 && $temp <= 30 ? 'fa-check-circle text-green-500' : '' }}
-                                        {{ $temp > 30 ? 'fa-fire text-red-500' : '' }}
-                                        "></i>
-
-                                        <span
-                                            class="text-sm font-extrabold
-                                        {{ $temp < 25 ? 'text-blue-500' : '' }}
-                                        {{ $temp >= 25 && $temp <= 30 ? 'text-green-500' : '' }}
-                                        {{ $temp > 30 ? 'text-red-500' : '' }}
-                                        ">
-                                            {{ $temp ?? '0' }}°C
-                                        </span>
+                                <div class="w-full bg-slate-100 rounded-full h-2">
+                                    <div class="h-2 rounded-full 
+            {{ $k->current_chicken >= $k->capacity ? 'bg-red-500' : 'bg-emerald-500' }}"
+                                        style="width: {{ $k->capacity > 0 ? ($k->current_chicken / $k->capacity) * 100 : 0 }}%">
                                     </div>
+                                </div>
+                                <div class="flex justify-between mt-1 text-[10px] font-bold text-slate-500">
+                                    <span>{{ $k->current_chicken }} ekor</span>
+                                    <span>{{ $k->capacity }} ekor</span>
                                 </div>
                             </div>
                         </div>

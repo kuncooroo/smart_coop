@@ -28,18 +28,23 @@
                     <div class="relative group">
                         <div
                             class="w-full aspect-square rounded-3xl bg-slate-50 border-2 border-dashed border-slate-200 flex flex-col items-center justify-center overflow-hidden relative transition-all group-hover:border-orange-300">
-                            <i class="fas fa-camera text-3xl text-slate-200 mb-2"></i>
-                            <span class="text-[10px] text-slate-400 font-bold uppercase">Foto Kandang</span>
+                            
+                            <img id="preview-img" src="" class="w-full h-full object-cover hidden">
+
+                            <div id="placeholder-content" class="flex flex-col items-center">
+                                <i class="fas fa-camera text-3xl text-slate-200 mb-2"></i>
+                                <span class="text-[10px] text-slate-400 font-bold uppercase">Foto Kandang</span>
+                            </div>
                             
                             <div
                                 class="absolute inset-0 bg-slate-900/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all">
-                                <label for="image"
+                                <label for="image-input"
                                     class="cursor-pointer bg-white text-slate-900 p-3 rounded-full shadow-xl hover:scale-110 transition-transform">
                                     <i class="fas fa-plus"></i>
                                 </label>
                             </div>
                         </div>
-                        <input type="file" name="image" id="image" class="hidden" accept="image/*">
+                        <input type="file" name="image" id="image-input" class="hidden" accept="image/*">
                         <p class="text-center text-[10px] text-slate-400 mt-3 font-bold uppercase tracking-tighter">*MAX 2MB</p>
                     </div>
                 </div>
@@ -88,4 +93,19 @@
             </div>
         </form>
     </div>
+
+    <script>
+        const imageInput = document.getElementById('image-input');
+        const previewImg = document.getElementById('preview-img');
+        const placeholderContent = document.getElementById('placeholder-content');
+
+        imageInput.onchange = evt => {
+            const [file] = imageInput.files;
+            if (file) {
+                previewImg.src = URL.createObjectURL(file);
+                previewImg.classList.remove('hidden');
+                placeholderContent.classList.add('hidden');
+            }
+        }
+    </script>
 @endsection

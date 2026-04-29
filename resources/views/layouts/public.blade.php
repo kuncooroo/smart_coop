@@ -84,7 +84,7 @@
                     <i
                         class="fas fa-chart-bar text-lg transition-all duration-300 group-hover:scale-125 group-hover:rotate-12"></i>
                 </div>
-                <span class="font-bold text-sm">Laporan Data</span>
+                <span class="font-bold text-sm">Analisis & Laporan Data</span>
             </a>
         </nav>
 

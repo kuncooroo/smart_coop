@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Kandang;
 use App\Models\Suhu;
 use App\Models\Device;
+use App\Models\Deteksi; 
+// use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
@@ -14,8 +16,10 @@ class DashboardController extends Controller
         $avgTemperature = Suhu::whereDate('created_at', now()->today())->avg('temperature')
             ?? Suhu::avg('temperature')
             ?? 0;
+            
         $totalDevicesCount = Device::count();
         $onlineDevicesCount = Device::where('status', 'online')->count();
+        
         $totalKandangCount = Kandang::count();
         $activeKandangCount = Kandang::whereHas('devices', function ($q) {
             $q->where('status', 'online');
@@ -24,6 +28,11 @@ class DashboardController extends Controller
         $openDoorsCount = Device::where('door_status', 'TERBUKA')->count();
         $anyDoorOpen = $openDoorsCount > 0;
 
+        $latestDetections = Deteksi::with(['kandang', 'device'])
+            ->latest()
+            ->limit(4)
+            ->get();
+
         return view('Public.dashboard', compact(
             'avgTemperature',
             'totalDevicesCount',
@@ -31,7 +40,8 @@ class DashboardController extends Controller
             'totalKandangCount',
             'activeKandangCount',
             'openDoorsCount',
-            'anyDoorOpen'
+            'anyDoorOpen',
+            'latestDetections'
         ));
     }
 

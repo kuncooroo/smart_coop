@@ -9,11 +9,31 @@ use App\Models\Device;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
+
 class ActivityLogController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $logs = ActivityLog::latest()->paginate(50);
+        $query = ActivityLog::latest();
+
+        if ($request->has('category') && $request->category != '') {
+            $query->where('category', $request->category);
+        }
+
+        if ($request->has('status') && $request->status != '') {
+            $query->where('status', $request->status);
+        }
+
+ 
+        if ($request->has('search') && $request->search != '') {
+            $query->where(function ($q) use ($request) {
+                $q->where('description', 'like', '%' . $request->search . '%')
+                    ->orWhere('action', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        $logs = $query->paginate(50)->withQueryString();
+
         return view('Public.activity_log', compact('logs'));
     }
 

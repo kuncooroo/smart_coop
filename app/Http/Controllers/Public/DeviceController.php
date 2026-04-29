@@ -25,19 +25,20 @@ class DeviceController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'device_id'   => 'required|unique:devices,device_id',
-            'device_name' => 'required|string|max:255',
-            'kandang_id'  => 'required|exists:kandangs,id',
-            'image'       => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'device_id'     => 'required|unique:devices,device_id',
+            'device_name'   => 'required|string|max:255',
+            'kandang_id'    => 'required|exists:kandangs,id',
+            'profile_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        $data = $request->all();
+        $data = $request->except('profile_image');
+        $data['status'] = $request->status ?? 'aktif'; 
+        $data['connection_status'] = 'online'; 
+        $data['signal_strength'] = rand(70, 100);
+        $data['last_updated'] = now();
 
-        $data['status'] = 'offline';
-        $data['last_online'] = now();
-
-        if ($request->hasFile('image')) {
-            $data['image'] = $request->file('image')->store('devices', 'public');
+        if ($request->hasFile('profile_image')) {
+            $data['profile_image'] = $request->file('profile_image')->store('devices', 'public');
         }
 
         Device::create($data);
@@ -59,20 +60,28 @@ class DeviceController extends Controller
         $device = Device::findOrFail($id);
 
         $request->validate([
-            'device_id'   => 'required|unique:devices,device_id,' . $id,
-            'device_name' => 'required|string|max:255',
-            'kandang_id'  => 'required|exists:kandangs,id',
-            'image'       => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'device_name'       => 'required|string|max:255',
+            'kandang_id'        => 'required|exists:kandangs,id',
+            'profile_image'     => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'installation_date' => 'nullable|date',
         ]);
 
-        $data = $request->all();
+        $data = $request->except(['profile_image', 'remove_image']);
 
-        if ($request->hasFile('image')) {
-            if ($device->image) {
-                Storage::disk('public')->delete($device->image);
+        if ($request->remove_image == "1") {
+            if ($device->profile_image) {
+                Storage::disk('public')->delete($device->profile_image);
+                $device->profile_image = null; 
             }
+        }
 
-            $data['image'] = $request->file('image')->store('devices', 'public');
+        if ($request->hasFile('profile_image')) {
+            if ($device->profile_image) {
+                Storage::disk('public')->delete($device->profile_image);
+            }
+            $data['profile_image'] = $request->file('profile_image')->store('devices', 'public');
+        } else {
+            $data['profile_image'] = $device->profile_image;
         }
 
         $device->update($data);
@@ -85,8 +94,8 @@ class DeviceController extends Controller
     {
         $device = Device::findOrFail($id);
 
-        if ($device->image) {
-            Storage::disk('public')->delete($device->image);
+        if ($device->profile_image) {
+            Storage::disk('public')->delete($device->profile_image);
         }
 
         $device->delete();

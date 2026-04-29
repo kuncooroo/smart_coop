@@ -68,13 +68,18 @@ class MonitoringController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        $data = $request->all();
+        $data = $request->except(['image']); 
 
         if ($request->hasFile('image')) {
             if ($kandang->image) {
                 Storage::disk('public')->delete($kandang->image);
             }
             $data['image'] = $request->file('image')->store('kandang', 'public');
+        } elseif ($request->remove_image == "1") {
+            if ($kandang->image) {
+                Storage::disk('public')->delete($kandang->image);
+            }
+            $data['image'] = null; 
         }
 
         $kandang->update($data);

@@ -15,6 +15,7 @@ class Device extends Model
         'status',
         'door_status',
         'light_status',
+        'installation_date',
         'last_updated'
     ];
 
@@ -25,11 +26,6 @@ class Device extends Model
     public function kandang()
     {
         return $this->belongsTo(Kandang::class);
-    }
-
-    public function sensorData()
-    {
-        return $this->hasMany(SensorData::class);
     }
 
     public function activityLogs()
