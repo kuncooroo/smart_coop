@@ -7,34 +7,69 @@ use App\Models\ActivityLog;
 use App\Models\DeviceSetting;
 use App\Models\Device;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
-
 
 class ActivityLogController extends Controller
 {
     public function index(Request $request)
     {
-        $query = ActivityLog::latest();
+        $systemLogs = DB::table('activity_logs')
+            ->select(
+                'created_at',
+                DB::raw("'system' as category"),
+                'action',
+                'description',
+                'status'
+            );
 
-        if ($request->has('category') && $request->category != '') {
+        $detectionLogs = DB::table('deteksis')
+            ->select(
+                'created_at',
+                DB::raw("'detection' as category"),
+                DB::raw("object as action"),
+                DB::raw("CONCAT('Terdeteksi objek ', object, ' (Akurasi: ', confidence, '%)') as description"),
+                DB::raw("IF(is_valid = 1, 'success', 'warning') as status")
+            );
+
+        $movementLogs = DB::table('ayams')
+            ->select(
+                'created_at',
+                DB::raw("'movement' as category"),
+                DB::raw("direction as action"),
+                DB::raw("CONCAT('Ayam terdeteksi ', direction, ' via ', source) as description"),
+                DB::raw("IF(direction = 'IN', 'info', 'warning') as status")
+            );
+
+        $combinedQuery = $systemLogs->union($detectionLogs)->union($movementLogs);
+
+        $query = DB::table(DB::raw("({$combinedQuery->toSql()}) as combined_logs"))
+            ->mergeBindings($combinedQuery);
+
+        if ($request->filled('category')) {
             $query->where('category', $request->category);
         }
 
-        if ($request->has('status') && $request->status != '') {
+        if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
- 
-        if ($request->has('search') && $request->search != '') {
+        if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
                 $q->where('description', 'like', '%' . $request->search . '%')
                     ->orWhere('action', 'like', '%' . $request->search . '%');
             });
         }
 
-        $logs = $query->paginate(50)->withQueryString();
+        $logsData = $query->orderBy('created_at', 'desc')->paginate(50)->withQueryString();
 
-        return view('Public.activity_log', compact('logs'));
+        $logs = $logsData->getCollection()->map(function ($item) {
+            $item->created_at = Carbon::parse($item->created_at);
+            return $item;
+        });
+        $logsData->setCollection($logs);
+
+        return view('Public.activity_log', ['logs' => $logsData]);
     }
 
     public function store(Request $request)
@@ -57,11 +92,9 @@ class ActivityLogController extends Controller
     public function runDoorTimers()
     {
         $settings = DeviceSetting::where('auto_mode', true)->get();
-
         $now = Carbon::now()->format('H:i');
 
         foreach ($settings as $setting) {
-
             $device = Device::where('kandang_id', $setting->kandang_id)
                 ->where('device_type', 'actuator')
                 ->first();
@@ -69,12 +102,8 @@ class ActivityLogController extends Controller
             if (!$device) continue;
 
             if ($setting->timer_open && $setting->timer_open == $now) {
-
                 if ($device->door_status != 'TERBUKA') {
-
-                    $device->update([
-                        'door_status' => 'TERBUKA'
-                    ]);
+                    $device->update(['door_status' => 'TERBUKA']);
 
                     ActivityLog::create([
                         'device_id' => $device->device_id,
@@ -86,12 +115,8 @@ class ActivityLogController extends Controller
             }
 
             if ($setting->timer_close && $setting->timer_close == $now) {
-
                 if ($device->door_status != 'TERTUTUP') {
-
-                    $device->update([
-                        'door_status' => 'TERTUTUP'
-                    ]);
+                    $device->update(['door_status' => 'TERTUTUP']);
 
                     ActivityLog::create([
                         'device_id' => $device->device_id,

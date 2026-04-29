@@ -72,7 +72,7 @@
                 <h3 class="text-2xl font-black text-slate-800 tracking-tight">Live Detection Feed</h3>
                 <p class="text-slate-500 text-sm font-medium">Hasil tangkapan kamera dan proses deteksi AI YOLO.</p>
             </div>
-            <a href="#" class="text-[10px] font-black uppercase tracking-[0.2em] text-blue-600 bg-blue-50 px-4 py-2 rounded-lg hover:bg-orange-500 hover:text-white transition-all">
+            <a href="{{ route('activity_log') }}" class="text-[10px] font-black uppercase tracking-[0.2em] text-blue-600 bg-blue-50 px-4 py-2 rounded-lg hover:bg-orange-500 hover:text-white transition-all">
                 Lihat Semua History <i class="fas fa-arrow-right ml-1"></i>
             </a>
         </div>

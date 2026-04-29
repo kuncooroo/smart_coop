@@ -2,16 +2,18 @@
 @section('title', 'Daftar Hardware')
 
 @section('content')
-    @if(session('success'))
-    <div id="alert-success" class="mb-6 mx-auto w-full bg-emerald-50 border border-emerald-200 text-emerald-600 px-4 py-3 rounded-xl flex items-center justify-between shadow-sm animate-fade-in-down">
-        <div class="flex items-center">
-            <i class="fas fa-check-circle mr-3 text-lg"></i>
-            <span class="text-sm font-bold uppercase tracking-wider">{{ session('success') }}</span>
+    @if (session('success'))
+        <div id="alert-success"
+            class="mb-6 mx-auto w-full bg-emerald-50 border border-emerald-200 text-emerald-600 px-4 py-3 rounded-xl flex items-center justify-between shadow-sm animate-fade-in-down">
+            <div class="flex items-center">
+                <i class="fas fa-check-circle mr-3 text-lg"></i>
+                <span class="text-sm font-bold uppercase tracking-wider">{{ session('success') }}</span>
+            </div>
+            <button onclick="document.getElementById('alert-success').remove()"
+                class="text-emerald-500 hover:text-emerald-700">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
-        <button onclick="document.getElementById('alert-success').remove()" class="text-emerald-500 hover:text-emerald-700">
-            <i class="fas fa-times"></i>
-        </button>
-    </div>
     @endif
 
     <div class="w-full mb-8 flex justify-between items-center">
@@ -37,11 +39,15 @@
             <table class="w-full text-left border-collapse">
                 <thead>
                     <tr class="bg-white border-b border-slate-50">
-                        <th class="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Info Device</th>
-                        <th class="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">ID & Barcode</th>
+                        <th class="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Info Device
+                        </th>
+                        <th class="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">ID & Barcode
+                        </th>
                         <th class="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Lokasi</th>
-                        <th class="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Kesehatan</th>
-                        <th class="px-8 py-4 text-right text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Aksi</th>
+                        <th class="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Kesehatan
+                        </th>
+                        <th class="px-8 py-4 text-right text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
+                            Aksi</th>
                     </tr>
                 </thead>
 
@@ -50,13 +56,16 @@
                         <tr class="hover:bg-slate-50/50 transition-colors">
                             <td class="px-8 py-5">
                                 <div class="flex items-center space-x-4">
-                                    <div class="relative w-14 h-14 rounded-2xl overflow-hidden bg-slate-100 flex items-center justify-center border">
+                                    <div
+                                        class="relative w-14 h-14 rounded-2xl overflow-hidden bg-slate-100 flex items-center justify-center border">
                                         @if ($device->profile_image)
-                                            <img src="{{ asset('storage/' . $device->profile_image) }}" class="w-full h-full object-cover">
+                                            <img src="{{ asset('storage/' . $device->profile_image) }}"
+                                                class="w-full h-full object-cover">
                                         @else
                                             <i class="fas fa-microchip text-2xl text-slate-300"></i>
                                         @endif
-                                        <span class="absolute bottom-1 right-1 w-3 h-3 rounded-full border-2 border-white
+                                        <span
+                                            class="absolute bottom-1 right-1 w-3 h-3 rounded-full border-2 border-white
                                             {{ $device->connection_status == 'online' ? 'bg-emerald-500' : 'bg-slate-400' }}">
                                         </span>
                                     </div>
@@ -68,9 +77,14 @@
                                         <div class="flex items-center gap-2 mt-1">
                                             @php
                                                 $signal = $device->signal_strength ?? 0;
-                                                $signalColor = $device->connection_status == 'offline' ? 'text-slate-300' : 
-                                                              ($signal > 70 ? 'text-emerald-500' : 
-                                                              ($signal > 30 ? 'text-amber-500' : 'text-rose-500'));
+                                                $signalColor =
+                                                    $device->connection_status == 'offline'
+                                                        ? 'text-slate-300'
+                                                        : ($signal > 70
+                                                            ? 'text-emerald-500'
+                                                            : ($signal > 30
+                                                                ? 'text-amber-500'
+                                                                : 'text-rose-500'));
                                             @endphp
                                             <i class="fas fa-wifi text-[10px] {{ $signalColor }}"></i>
                                             <span class="text-[10px] text-slate-400 font-bold uppercase">
@@ -82,9 +96,12 @@
                             </td>
 
                             <td class="px-8 py-5">
-                                <div class="bg-white p-2 border rounded-lg text-center shadow-sm max-w-[120px]">
-                                    {!! DNS1D::getBarcodeHTML($device->device_id, 'C128', 1.1, 28) !!}
-                                    <p class="text-[9px] font-bold mt-1 text-slate-500 tracking-widest">
+                                <div
+                                    class="bg-white p-2 border rounded-lg shadow-sm w-fit mx-auto flex flex-col items-center">
+                                    <div class="barcode-container">
+                                        {!! DNS1D::getBarcodeHTML($device->device_id, 'C128', 1.1, 28) !!}
+                                    </div>
+                                    <p class="text-[9px] font-bold mt-2 text-slate-500 tracking-widest uppercase">
                                         {{ $device->device_id }}
                                     </p>
                                 </div>
@@ -111,7 +128,8 @@
                                     ];
                                     $h = $healthConfig[$device->health_status] ?? $healthConfig['MAINTENANCE'];
                                 @endphp
-                                <span class="px-3 py-1 text-[9px] font-black rounded-lg border uppercase {{ $h['bg'] }} {{ $h['text'] }}">
+                                <span
+                                    class="px-3 py-1 text-[9px] font-black rounded-lg border uppercase {{ $h['bg'] }} {{ $h['text'] }}">
                                     {{ $device->health_status }}
                                 </span>
                             </td>
@@ -126,7 +144,8 @@
                                     <form action="{{ route('devices.destroy', $device->id) }}" method="POST"
                                         onsubmit="return confirm('Apakah Anda yakin ingin menghapus perangkat ini?')">
                                         @csrf @method('DELETE')
-                                        <button class="w-8 h-8 flex items-center justify-center hover:text-rose-500 transition-colors">
+                                        <button
+                                            class="w-8 h-8 flex items-center justify-center hover:text-rose-500 transition-colors">
                                             <i class="fas fa-trash text-slate-400 hover:text-rose-500"></i>
                                         </button>
                                     </form>

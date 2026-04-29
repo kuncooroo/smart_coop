@@ -6,66 +6,70 @@ use App\Http\Controllers\Controller;
 use App\Models\Device;
 use App\Models\Suhu;
 use App\Models\Ayam;
-use App\Models\Deteksi;
+use App\Models\Kandang;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
 class LaporanController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $totalDevices = Device::count();
-        $online = Device::where('status', 'online')->count();
-        $offline = Device::where('status', 'offline')->count();
-        $warning = Device::where('health_status', '!=', 'EXCELLENT')->count();
+        $daftarKandang = Kandang::all();
 
-        $alerts24h = Deteksi::where('created_at', '>=', now()->subDay())
-            ->where('is_valid', false)
-            ->count();
+        if ($daftarKandang->isEmpty()) {
+            return "Data kandang tidak ditemukan.";
+        }
 
-        $dates = collect(range(0, 9))->map(function ($i) {
-            return now()->subDays(9 - $i)->format('Y-m-d');
-        });
+        $kandangId = $request->get('kandang_id', $daftarKandang->first()->id);
+        $kandang = Kandang::with(['devices'])->find($kandangId);
+        $current_chicken = $kandang->current_chicken ?? 0;
+        $capacity = $kandang->capacity ?? 0;
+        $last_temp = Suhu::where('kandang_id', $kandangId)->latest()->value('temperature') ?? 0;
+        $firstDevice = $kandang->devices->first();
+        $door_status = $firstDevice ? $firstDevice->door_status : 'TIDAK ADA ALAT';
+        $labels = [];
+        $chicken_data = [];
+        $temp_data = [];
 
-        $data = $dates->map(function ($date) {
+        for ($i = 6; $i >= 0; $i--) {
+            $date = Carbon::today()->subDays($i);
+            $labels[] = $date->format('d M');
 
-            $masuk = (int) Ayam::whereDate('created_at', $date)
+            $chicken_data[] = Ayam::where('kandang_id', $kandangId)
+                ->whereDate('created_at', $date)
                 ->where('direction', 'IN')
                 ->count();
 
-            $keluar = (int) Ayam::whereDate('created_at', $date)
-                ->where('direction', 'OUT')
-                ->count();
-
-            $suhu = (float) Suhu::whereDate('created_at', $date)
-                ->avg('temperature');
-
-            return [
-                'date' => (string) $date,
-                'masuk' => $masuk,
-                'keluar' => $keluar,
-                'suhu' => round($suhu ?? 0, 2)
-            ];
-        });
-
-        $labels = $data->pluck('date')->map(function ($d) {
-            return Carbon::parse($d)->format('d M');
-        })->values()->toArray();
-
-        $masuk = $data->pluck('masuk')->map(fn($v) => (int)$v)->values()->toArray();
-        $keluar = $data->pluck('keluar')->map(fn($v) => (int)$v)->values()->toArray();
-        $suhu = $data->pluck('suhu')->map(fn($v) => (float)$v)->values()->toArray();
+            $temp_data[] = round(Suhu::where('kandang_id', $kandangId)
+                ->whereDate('created_at', $date)
+                ->avg('temperature') ?? 0, 1);
+        }
+        $online = Device::where('kandang_id', $kandangId)->where('connection_status', 'online')->count();
+        $offline = Device::where('kandang_id', $kandangId)->where('connection_status', 'offline')->count();
+        $health_stats = [
+            'excellent'   => Device::where('kandang_id', $kandangId)->where('health_status', 'EXCELLENT')->count(),
+            'degraded'    => Device::where('kandang_id', $kandangId)->where('health_status', 'DEGRADED')->count(),
+            'critical'    => Device::where('kandang_id', $kandangId)->where('health_status', 'CRITICAL')->count(),
+            'maintenance' => Device::where('kandang_id', $kandangId)->where('health_status', 'MAINTENANCE')->count(),
+        ];
+        $manual_count = Ayam::where('kandang_id', $kandangId)->where('source', 'MANUAL')->count();
+        $auto_count = Ayam::where('kandang_id', $kandangId)->whereIn('source', ['CAM', 'AUTO'])->count();
 
         return view('Public.laporan.index', compact(
-            'totalDevices',
+            'daftarKandang',
+            'kandangId',
+            'current_chicken',
+            'capacity',
+            'last_temp',
+            'door_status',
+            'labels',
+            'chicken_data',
+            'temp_data',
             'online',
             'offline',
-            'warning',
-            'alerts24h',
-            'labels',
-            'masuk',
-            'keluar',
-            'suhu'
+            'health_stats',
+            'manual_count',
+            'auto_count'
         ));
     }
 }

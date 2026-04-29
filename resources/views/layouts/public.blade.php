@@ -172,15 +172,15 @@
 
                 <div x-data="{ open: false }" class="relative">
                     <button @click="open = !open" @click.away="open = false"
-                        class="flex items-center space-x-3 group focus:outline-none p-1.5 pr-3 rounded-2xl hover:bg-slate-50 transition-all duration-300">
+                        class="flex items-center justify-center group focus:outline-none p-1 rounded-full hover:bg-slate-100 transition-all duration-300 ring-2 ring-transparent hover:ring-slate-200">
 
                         <div class="relative">
                             @if (Auth::user()->profile)
                                 <img src="{{ asset('storage/' . Auth::user()->profile) }}"
-                                    class="w-10 h-10 rounded-xl object-cover ring-2 ring-white shadow-md group-hover:ring-orange-100 transition-all">
+                                    class="w-10 h-10 rounded-full object-cover ring-2 ring-white shadow-sm group-hover:ring-orange-100 transition-all">
                             @else
                                 <div
-                                    class="w-10 h-10 rounded-xl bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center font-bold text-white ring-2 ring-white shadow-md uppercase text-xs tracking-tighter">
+                                    class="w-10 h-10 rounded-full bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center font-bold text-white ring-2 ring-white shadow-sm uppercase text-xs tracking-tighter group-hover:ring-orange-100 transition-all">
                                     @php
                                         $name = Auth::user()->full_name ?? Auth::user()->username;
                                         $initials = collect(explode(' ', $name))
@@ -192,22 +192,9 @@
                                 </div>
                             @endif
                             <div
-                                class="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-emerald-500 border-2 border-white rounded-full">
+                                class="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full">
                             </div>
                         </div>
-
-                        <div class="text-left hidden sm:block">
-                            <p
-                                class="text-sm font-black text-slate-800 leading-none group-hover:text-orange-600 transition-colors">
-                                {{ Auth::user()->nama_lengkap ?? Auth::user()->username }}
-                            </p>
-                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">
-                                {{ Auth::user()->role }}
-                            </p>
-                        </div>
-
-                        <i class="fas fa-chevron-down text-[10px] text-slate-300 transition-transform duration-300"
-                            :class="open ? 'rotate-180' : ''"></i>
                     </button>
 
                     <div x-show="open" x-transition:enter="transition ease-out duration-200"
@@ -218,8 +205,11 @@
                         x-transition:leave-end="opacity-0 scale-95 translate-y-2"
                         class="absolute right-0 mt-3 w-56 bg-white rounded-2xl shadow-2xl shadow-slate-200/50 border border-slate-100 py-2 z-50">
 
-                        <div class="px-4 py-3 border-b border-slate-50 mb-2">
-                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Akun Saya</p>
+                        <div class="px-4 py-3 border-b border-slate-50 mb-2 bg-slate-50/50">
+                            <p class="text-xs font-bold text-slate-800">
+                                {{ Auth::user()->nama_lengkap ?? Auth::user()->username }}</p>
+                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-0.5">
+                                {{ Auth::user()->role }}</p>
                         </div>
 
                         <a href="{{ route('profile.edit') }}"
