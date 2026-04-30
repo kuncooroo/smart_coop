@@ -11,6 +11,7 @@ class Kandang extends Model
         'code',
         'image',
         'capacity',
+        'current_chicken',
         'timer_open',
         'timer_close'
     ];

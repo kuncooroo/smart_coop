@@ -38,10 +38,13 @@ class MonitoringController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
-            'code' => 'required|string|unique:kandangs,code',
-            'capacity' => 'required|integer',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'name'            => 'required|string|max:255',
+            'code'            => 'required|string|unique:kandangs,code',
+            'capacity'        => 'required|integer|min:0',
+            'current_chicken' => 'required|integer|min:0|lte:capacity',
+            'image'           => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+        ], [
+            'current_chicken.lte' => 'Jumlah ayam tidak boleh melebihi kapasitas kandang!'
         ]);
 
         $data = $request->all();
@@ -51,6 +54,7 @@ class MonitoringController extends Controller
         }
 
         $kandang = Kandang::create($data);
+
         $kandang->devices()->create(['device_id' => 'SERVO-' . $kandang->code, 'door_status' => 'TERTUTUP']);
         $kandang->devices()->create(['device_id' => 'LAMP-' . $kandang->code, 'light_status' => 'MATI']);
 
@@ -64,11 +68,12 @@ class MonitoringController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'code' => 'required|string|unique:kandangs,code,' . $id,
-            'capacity' => 'required|integer',
+            'capacity' => 'required|integer|min:0',
+            'current_chicken' => 'required|integer|min:0|lte:capacity',
             'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        $data = $request->except(['image']); 
+        $data = $request->except(['image']);
 
         if ($request->hasFile('image')) {
             if ($kandang->image) {
@@ -79,7 +84,7 @@ class MonitoringController extends Controller
             if ($kandang->image) {
                 Storage::disk('public')->delete($kandang->image);
             }
-            $data['image'] = null; 
+            $data['image'] = null;
         }
 
         $kandang->update($data);

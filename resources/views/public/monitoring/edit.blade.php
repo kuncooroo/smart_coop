@@ -27,6 +27,7 @@
             @method('PUT')
             <div class="flex flex-col lg:flex-row gap-12">
                 <input type="hidden" name="remove_image" id="remove-image-flag" value="0">
+                
                 <div class="w-full lg:w-72">
                     <div class="relative group">
                         <div
@@ -42,67 +43,79 @@
                                     class="cursor-pointer bg-white text-slate-900 p-3 rounded-full shadow-xl hover:scale-110 transition-transform">
                                     <i class="fas fa-camera"></i>
                                 </label>
-
                             </div>
+
                             <button type="button" id="btn-remove-image"
                                 class="absolute top-3 right-3 bg-red-500 text-white w-9 h-9 rounded-full shadow-lg flex items-center justify-center hover:scale-110 transition-transform {{ $kandang->image ? '' : 'hidden' }}">
                                 <i class="fas fa-trash text-sm"></i>
                             </button>
+                        </div>
+                        <input type="file" name="image" id="image-input" class="hidden" accept="image/*">
+                        <p class="text-center text-[10px] text-slate-400 mt-3 font-bold uppercase tracking-tighter">
+                            *Klik foto untuk mengganti
+                        </p>
                     </div>
-                    <input type="file" name="image" id="image-input" class="hidden" accept="image/*">
-                    <p class="text-center text-[10px] text-slate-400 mt-3 font-bold uppercase tracking-tighter">
-                        *Klik foto untuk mengganti
-                    </p>
+                </div>
+
+                <div class="flex-1">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-8">
+                        
+                        <div class="space-y-1 border-b border-slate-200 pb-2 focus-within:border-orange-500 transition-all md:col-span-2">
+                            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">Nama Kandang</label>
+                            <input type="text" name="name" value="{{ old('name', $kandang->name) }}"
+                                class="w-full py-1 bg-transparent focus:outline-none text-lg text-slate-700 font-semibold uppercase"
+                                placeholder="Contoh: Kandang Utama" required>
+                        </div>
+
+                        <div class="space-y-1 border-b border-slate-100 pb-2 bg-slate-50/50 px-2 rounded-t-lg">
+                            <label class="block text-[10px] font-bold text-slate-300 uppercase tracking-widest">Kode Unik (Permanent)</label>
+                            <div class="flex items-center justify-between">
+                                <input type="text" name="code" value="{{ $kandang->code }}"
+                                    class="w-full py-1 bg-transparent focus:outline-none text-lg text-slate-400 font-semibold uppercase cursor-not-allowed"
+                                    readonly>
+                                <i class="fas fa-lock text-slate-200 text-sm"></i>
+                            </div>
+                        </div>
+
+                        <div class="space-y-1 border-b border-slate-200 pb-2 focus-within:border-orange-500 transition-all">
+                            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">Kapasitas (Ekor)</label>
+                            <div class="flex items-center justify-between">
+                                <input type="number" name="capacity" value="{{ old('capacity', $kandang->capacity) }}"
+                                    class="w-full py-1 bg-transparent focus:outline-none text-lg text-slate-700 font-semibold"
+                                    placeholder="0" required>
+                                <i class="fas fa-feather text-slate-400 text-xl"></i>
+                            </div>
+                        </div>
+
+                        <div class="space-y-1 border-b border-slate-200 pb-2 focus-within:border-orange-500 transition-all">
+                            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">Jumlah Ayam Sekarang</label>
+                            <div class="flex items-center">
+                                <input type="number" name="current_chicken" 
+                                    value="{{ old('current_chicken', $kandang->current_chicken) }}"
+                                    class="w-full py-1 bg-transparent focus:outline-none text-lg text-slate-700 font-semibold"
+                                    placeholder="0" required>
+                                <span class="text-xs text-slate-400 font-bold">EKOR</span>
+                            </div>
+                            @error('current_chicken')
+                                <p class="text-rose-500 text-[10px] mt-1 italic">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                    </div>
+
+                    <div class="mt-12 flex justify-end gap-4">
+                        <a href="{{ route('monitoring.index') }}"
+                            class="bg-slate-100 hover:bg-slate-200 text-slate-500 font-bold py-3 px-8 rounded-xl transition text-xs uppercase tracking-widest flex items-center">
+                            Batal
+                        </a>
+                        <button type="submit"
+                            class="bg-[#002855] hover:bg-orange-600 text-white font-bold py-3 px-10 rounded-xl transition shadow-lg text-sm uppercase tracking-widest">
+                            Simpan Perubahan
+                        </button>
+                    </div>
                 </div>
             </div>
-
-            <div class="flex-1">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-8">
-                    <div
-                        class="space-y-1 border-b border-slate-200 pb-2 focus-within:border-orange-500 transition-all md:col-span-2">
-                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">Nama
-                            Kandang</label>
-                        <input type="text" name="name" value="{{ old('name', $kandang->name) }}"
-                            class="w-full py-1 bg-transparent focus:outline-none text-lg text-slate-700 font-semibold uppercase"
-                            placeholder="Contoh: Kandang Utama" required>
-                    </div>
-
-                    <div class="space-y-1 border-b border-slate-100 pb-2 bg-slate-50/50 px-2 rounded-t-lg">
-                        <label class="block text-[10px] font-bold text-slate-300 uppercase tracking-widest">Kode Unik
-                            (Permanent)</label>
-                        <div class="flex items-center justify-between">
-                            <input type="text" name="code" value="{{ $kandang->code }}"
-                                class="w-full py-1 bg-transparent focus:outline-none text-lg text-slate-400 font-semibold uppercase cursor-not-allowed"
-                                readonly>
-                            <i class="fas fa-lock text-slate-200 text-sm"></i>
-                        </div>
-                    </div>
-
-                    <div class="space-y-1 border-b border-slate-200 pb-2 focus-within:border-orange-500 transition-all">
-                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">Kapasitas
-                            (Ekor)</label>
-                        <div class="flex items-center justify-between">
-                            <input type="number" name="capacity" value="{{ old('capacity', $kandang->capacity) }}"
-                                class="w-full py-1 bg-transparent focus:outline-none text-lg text-slate-700 font-semibold"
-                                placeholder="0" required>
-                            <i class="fas fa-feather text-slate-400 text-xl"></i>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="mt-12 flex justify-end gap-4">
-                    <a href="{{ route('monitoring.index') }}"
-                        class="bg-slate-100 hover:bg-slate-200 text-slate-500 font-bold py-3 px-8 rounded-xl transition text-xs uppercase tracking-widest flex items-center">
-                        Batal
-                    </a>
-                    <button type="submit"
-                        class="bg-[#002855] hover:bg-orange-600 text-white font-bold py-3 px-10 rounded-xl transition shadow-lg text-sm uppercase tracking-widest">
-                        Simpan Perubahan
-                    </button>
-                </div>
-            </div>
-    </div>
-    </form>
+        </form>
     </div>
 
     <script>

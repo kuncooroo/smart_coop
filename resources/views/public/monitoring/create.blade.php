@@ -26,8 +26,7 @@
 
                 <div class="w-full lg:w-72">
                     <div class="relative group">
-                        <div
-                            class="w-full aspect-square rounded-3xl bg-slate-50 border-2 border-dashed border-slate-200 flex flex-col items-center justify-center overflow-hidden relative transition-all group-hover:border-orange-300">
+                        <div class="w-full aspect-square rounded-3xl bg-slate-50 border-2 border-dashed border-slate-200 flex flex-col items-center justify-center overflow-hidden relative transition-all group-hover:border-orange-300">
                             
                             <img id="preview-img" src="" class="w-full h-full object-cover hidden">
 
@@ -35,15 +34,19 @@
                                 <i class="fas fa-camera text-3xl text-slate-200 mb-2"></i>
                                 <span class="text-[10px] text-slate-400 font-bold uppercase">Foto Kandang</span>
                             </div>
-                            
-                            <div
-                                class="absolute inset-0 bg-slate-900/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all">
-                                <label for="image-input"
-                                    class="cursor-pointer bg-white text-slate-900 p-3 rounded-full shadow-xl hover:scale-110 transition-transform">
+
+                            <div class="absolute inset-0 bg-slate-900/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all">
+                                <label for="image-input" class="cursor-pointer bg-white text-slate-900 p-3 rounded-full shadow-xl hover:scale-110 transition-transform">
                                     <i class="fas fa-plus"></i>
                                 </label>
                             </div>
+
+                            <button type="button" id="btn-remove-image"
+                                class="absolute top-3 right-3 bg-red-500 text-white w-9 h-9 rounded-full shadow-lg flex items-center justify-center hover:scale-110 transition-transform hidden">
+                                <i class="fas fa-trash text-sm"></i>
+                            </button>
                         </div>
+                        
                         <input type="file" name="image" id="image-input" class="hidden" accept="image/*">
                         <p class="text-center text-[10px] text-slate-400 mt-3 font-bold uppercase tracking-tighter">*MAX 2MB</p>
                     </div>
@@ -77,11 +80,25 @@
                                 <i class="fas fa-feather text-slate-400 text-xl"></i>
                             </div>
                         </div>
+
+                        <div class="space-y-1 border-b border-slate-200 pb-2 focus-within:border-orange-500 transition-all">
+                            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">Jumlah Ayam Sekarang</label>
+                            <div class="flex items-center">
+                                <input type="number" name="current_chicken"
+                                    value="{{ old('current_chicken', 0) }}"
+                                    class="w-full py-1 bg-transparent focus:outline-none text-lg text-slate-700 font-semibold"
+                                    placeholder="0" required>
+                                <span class="text-xs text-slate-400 font-bold">EKOR</span>
+                            </div>
+                            @error('current_chicken')
+                                <p class="text-rose-500 text-[10px] mt-1 italic">{{ $message }}</p>
+                            @enderror
+                        </div>
                     </div>
 
                     <div class="mt-12 flex justify-end gap-4">
-                        <a href="{{ route('monitoring.index') }}" 
-                           class="bg-slate-100 hover:bg-slate-200 text-slate-500 font-bold py-3 px-8 rounded-xl transition text-xs uppercase tracking-widest flex items-center">
+                        <a href="{{ route('monitoring.index') }}"
+                            class="bg-slate-100 hover:bg-slate-200 text-slate-500 font-bold py-3 px-8 rounded-xl transition text-xs uppercase tracking-widest flex items-center">
                             Batal
                         </a>
                         <button type="submit"
@@ -98,6 +115,7 @@
         const imageInput = document.getElementById('image-input');
         const previewImg = document.getElementById('preview-img');
         const placeholderContent = document.getElementById('placeholder-content');
+        const btnRemove = document.getElementById('btn-remove-image');
 
         imageInput.onchange = evt => {
             const [file] = imageInput.files;
@@ -105,7 +123,16 @@
                 previewImg.src = URL.createObjectURL(file);
                 previewImg.classList.remove('hidden');
                 placeholderContent.classList.add('hidden');
+                btnRemove.classList.remove('hidden');
             }
+        }
+
+        btnRemove.onclick = () => {
+            imageInput.value = ""; 
+            previewImg.src = "";
+            previewImg.classList.add('hidden');
+            placeholderContent.classList.remove('hidden');
+            btnRemove.classList.add('hidden');
         }
     </script>
 @endsection
