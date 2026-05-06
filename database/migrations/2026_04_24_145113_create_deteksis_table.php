@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('kandang_id')->constrained()->cascadeOnDelete();
             $table->foreignId('device_id')->constrained()->cascadeOnDelete();
-            $table->string('object'); 
+            $table->json('objects')->nullable();
             $table->float('confidence')->nullable();
             $table->boolean('is_valid')->default(false); //
             $table->string('image')->nullable();

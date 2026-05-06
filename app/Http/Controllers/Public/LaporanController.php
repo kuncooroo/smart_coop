@@ -72,4 +72,60 @@ class LaporanController extends Controller
             'auto_count'
         ));
     }
+    public function export(Request $request)
+    {
+        $format = $request->get('format', 'csv');
+
+        $kandangId = $request->kandang_id;
+        $data = \App\Models\Ayam::where('kandang_id', $kandangId)->get();
+        $avgSuhu = \App\Models\Suhu::where('kandang_id', $kandangId)
+            ->avg('temperature');
+
+        if ($format === 'csv') {
+
+            $filename = "laporan.csv";
+
+            $headers = [
+                "Content-type" => "text/csv",
+                "Content-Disposition" => "attachment; filename=$filename",
+            ];
+
+            $callback = function () use ($data) {
+                $file = fopen('php://output', 'w');
+
+                fputcsv($file, ['ID', 'Direction', 'Source', 'Tanggal']);
+
+                foreach ($data as $row) {
+                    fputcsv($file, [
+                        $row->id,
+                        $row->direction,
+                        $row->source,
+                        $row->created_at
+                    ]);
+                }
+
+                fclose($file);
+            };
+
+            return response()->stream($callback, 200, $headers);
+        }
+
+        if ($format === 'pdf') {
+
+            $totalMasuk = $data->where('direction', 'IN')->count();
+            $totalKeluar = $data->where('direction', 'OUT')->count();
+
+            $avgSuhu = \App\Models\Suhu::where('kandang_id', $kandangId)
+                ->avg('temperature');
+
+            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('Public.laporan.export_pdf', [
+                'data' => $data,
+                'totalMasuk' => $totalMasuk,
+                'totalKeluar' => $totalKeluar,
+                'avgSuhu' => round($avgSuhu ?? 0, 1)
+            ]);
+
+            return $pdf->download('laporan.pdf');
+        }
+    }
 }

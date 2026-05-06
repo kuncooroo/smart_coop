@@ -17,6 +17,7 @@ class Deteksi extends Model
     ];
 
     protected $casts = [
+        'objects' => 'array',
         'boxes' => 'array',
         'is_valid' => 'boolean',
     ];

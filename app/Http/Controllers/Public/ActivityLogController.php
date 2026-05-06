@@ -27,8 +27,17 @@ class ActivityLogController extends Controller
             ->select(
                 'created_at',
                 DB::raw("'detection' as category"),
-                DB::raw("object as action"),
-                DB::raw("CONCAT('Terdeteksi objek ', object, ' (Akurasi: ', confidence, '%)') as description"),
+
+                DB::raw("COALESCE(JSON_UNQUOTE(JSON_EXTRACT(objects, '$[0].label')), 'tidak_ada') as action"),
+
+                DB::raw("CONCAT(
+            'Terdeteksi objek ',
+            COALESCE(JSON_UNQUOTE(JSON_EXTRACT(objects, '$[0].label')), 'tidak_ada'),
+            ' (Akurasi: ',
+            ROUND(confidence * 100, 0),
+            '%)'
+        ) as description"),
+
                 DB::raw("IF(is_valid = 1, 'success', 'warning') as status")
             );
 

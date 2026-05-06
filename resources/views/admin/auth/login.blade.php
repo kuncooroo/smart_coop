@@ -1,47 +1,38 @@
 <!DOCTYPE html>
-<html lang="id">
-
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Smart Chicken Farm</title>
-
+    <title>Login Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body class="bg-slate-100 flex items-center justify-center h-screen">
-    <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-        <h2 class="text-2xl font-bold text-center text-slate-800 mb-6">Login Smart Farm</h2>
+<body class="bg-slate-900 flex items-center justify-center h-screen">
 
-        @if ($errors->any())
-            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
-                {{ $errors->first() }}
-            </div>
-        @endif
+<div class="bg-white p-8 rounded-2xl w-full max-w-md shadow-xl">
 
-        <form method="POST" action="{{ route('login') }}">
-            @csrf
-            <div class="mb-4">
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="username">Username</label>
-                <input
-                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    id="username" type="text" name="username" required autofocus>
-            </div>
-            <div class="mb-6">
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="password">Password</label>
-                <input
-                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    id="password" type="password" name="password" required>
-            </div>
-            <div class="flex items-center justify-between">
-                <button
-                    class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full transition"
-                    type="submit">
-                    Masuk
-                </button>
-            </div>
-        </form>
-    </div>
+    <h2 class="text-2xl font-bold mb-6 text-center">Login Admin</h2>
+
+    @if(session('error'))
+        <div class="bg-red-100 text-red-600 p-2 mb-4 rounded">
+            {{ session('error') }}
+        </div>
+    @endif
+
+    <form method="POST" action="{{ route('admin.login.post') }}">
+        @csrf
+
+        <input type="email" name="email" placeholder="Email"
+            class="w-full mb-4 p-3 border rounded-lg">
+
+        <input type="password" name="password" placeholder="Password"
+            class="w-full mb-4 p-3 border rounded-lg">
+
+        <button class="w-full bg-rose-600 text-white py-3 rounded-lg">
+            Login
+        </button>
+
+    </form>
+
+</div>
+
 </body>
-
 </html>

@@ -3,18 +3,25 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
+// use Illuminate\Http\Request;
+// use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Auth;
 
 class SuperAdminMiddleware
 {
     /**
      * Handle an incoming request.
      *
-     * @param  Closure(Request): (Response)  $next
+     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next): Response
+    public function handle($request, Closure $next)
     {
+        $admin = Auth::guard('admin')->user();
+
+        if (!$admin || $admin->role !== 'superadmin') {
+            abort(403, 'Hanya superadmin yang bisa mengakses halaman ini');
+        }
+
         return $next($request);
     }
 }

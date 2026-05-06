@@ -1,6 +1,22 @@
     @extends('layouts.public')
     @section('title', 'Monitoring Real-time')
+    <style>
+        @keyframes floatUp {
+            0% {
+                opacity: 1;
+                transform: translate(-50%, 0);
+            }
 
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -20px);
+            }
+        }
+
+        .animate-plus {
+            animation: floatUp 0.8s ease forwards;
+        }
+    </style>
     @section('content')
         <div class="mb-10 flex justify-between items-center">
             <div>
@@ -93,7 +109,15 @@
                                     </div>
                                 </div>
                                 <div class="flex justify-between mt-1 text-[10px] font-bold text-slate-500">
-                                    <span>{{ $k->current_chicken }} ekor</span>
+                                    <div class="relative">
+                                        <span id="chicken-count-{{ $k->id }}">
+                                            {{ $k->current_chicken }}
+                                        </span> ekor
+
+                                        <span id="chicken-anim-{{ $k->id }}"
+                                            class="absolute left-1/2 -translate-x-1/2 text-green-500 text-sm font-bold pointer-events-none">
+                                        </span>
+                                    </div>
                                     <span>{{ $k->capacity }} ekor</span>
                                 </div>
                             </div>
@@ -264,5 +288,61 @@
                     closeModal(event.target.id);
                 }
             }
+        </script>
+        <script>
+            let previousCounts = {};
+
+            // ambil data awal
+            function initData() {
+                fetch('/api/kandang')
+                    .then(res => res.json())
+                    .then(data => {
+                        data.forEach(k => {
+                            previousCounts[k.id] = k.current_chicken;
+                        });
+                    });
+            }
+
+            // fetch tiap 3 detik
+            function fetchData() {
+                fetch('/api/kandang')
+                    .then(res => res.json())
+                    .then(data => {
+                        data.forEach(k => {
+                            updateChicken(k.id, k.current_chicken);
+                        });
+                    });
+            }
+
+            function updateChicken(id, newValue) {
+                let oldValue = previousCounts[id] ?? newValue;
+
+                if (newValue > oldValue) {
+                    showAnim(id, "+" + (newValue - oldValue), "text-green-500");
+                } else if (newValue < oldValue) {
+                    showAnim(id, "-" + (oldValue - newValue), "text-red-500");
+                }
+
+                previousCounts[id] = newValue;
+
+                let countEl = document.getElementById('chicken-count-' + id);
+                if (countEl) countEl.innerText = newValue;
+            }
+
+            function showAnim(id, text, colorClass) {
+                let el = document.getElementById('chicken-anim-' + id);
+                if (!el) return;
+
+                el.innerText = text;
+                el.className = "absolute left-1/2 -translate-x-1/2 font-bold " + colorClass + " animate-plus";
+
+                setTimeout(() => {
+                    el.innerText = '';
+                }, 800);
+            }
+
+            // jalanin
+            initData();
+            setInterval(fetchData, 3000);
         </script>
     @endsection

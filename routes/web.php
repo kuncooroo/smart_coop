@@ -9,6 +9,9 @@ use App\Http\Controllers\Public\DeviceController;
 use App\Http\Controllers\Public\LaporanController;
 use App\Http\Controllers\Public\MonitoringController;
 use App\Http\Controllers\Public\ActivityLogController;
+use App\Http\Controllers\Admin\AuthController as AdminAuthController;
+use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Models\Command;
 use Illuminate\Http\Request;
 
@@ -51,6 +54,7 @@ Route::middleware('auth')->group(function () {
         auth()->user()->unreadNotifications->markAsRead();
         return back();
     })->name('notif.read')->middleware('auth');
+
     Route::post('/commands', function (Request $request) {
         $request->validate([
             'device_id' => 'required',
@@ -66,6 +70,32 @@ Route::middleware('auth')->group(function () {
         return back()->with('success', 'Perintah berhasil dikirim ke perangkat.');
     })->name('commands.store');
 
+    Route::get('/api/kandang', function () {
+        return \App\Models\Kandang::select('id', 'current_chicken')->get();
+    });
+});
 
-    Route::middleware('can:admin')->prefix('admin')->group(function () {});
+Route::prefix('admin')->name('admin.')->group(function () {
+
+    Route::middleware('guest:admin')->group(function () {
+        Route::get('/login', [AdminAuthController::class, 'showLogin'])->name('login');
+        Route::post('/login', [AdminAuthController::class, 'login'])->name('login.post');
+    });
+
+    Route::post('/logout', [AdminAuthController::class, 'logout'])
+        ->name('logout')
+        ->middleware('auth:admin');
+
+    Route::middleware(['auth:admin'])->group(function () {
+
+        Route::get('/dashboard', [AdminDashboardController::class, 'index'])
+            ->name('dashboard');
+        Route::resource('/user', \App\Http\Controllers\Admin\UserController::class);
+        Route::resource('/device', \App\Http\Controllers\Admin\DeviceController::class);
+        Route::resource('/kandang', \App\Http\Controllers\Admin\KandangController::class);
+
+        Route::middleware(['superadmin'])->group(function () {
+            Route::resource('/admin', AdminController::class);
+        });
+    });
 });

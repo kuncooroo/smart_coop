@@ -42,7 +42,7 @@
                             </div>
 
                             <button type="button" id="btn-remove-image"
-                                class="absolute top-3 right-3 bg-red-500 text-white w-9 h-9 rounded-full shadow-lg flex items-center justify-center hover:scale-110 transition-transform hidden">
+                                class="absolute top-3 right-3 bg-red-500 text-white w-9 h-9 rounded-full shadow-lg items-center justify-center hover:scale-110 transition-transform hidden">
                                 <i class="fas fa-trash text-sm"></i>
                             </button>
                         </div>
