@@ -93,7 +93,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('/user', \App\Http\Controllers\Admin\UserController::class);
         Route::resource('/device', \App\Http\Controllers\Admin\DeviceController::class);
         Route::resource('/kandang', \App\Http\Controllers\Admin\KandangController::class);
-
+        Route::delete('/admin/user/{id}/remove-photo', [UserController::class, 'removePhoto'])->name('admin.user.remove-photo');
+        
         Route::middleware(['superadmin'])->group(function () {
             Route::resource('/admin', AdminController::class);
         });

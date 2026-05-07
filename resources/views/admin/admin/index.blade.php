@@ -1,93 +1,212 @@
 @extends('layouts.admin')
-@section('title', 'System Administrator Registry')
+@section('title', 'Manajemen Administrator')
 
 @section('content')
+    @if (session('success'))
+        <div id="alert-success"
+            class="mb-6 mx-auto w-full bg-emerald-50 border border-emerald-200 text-emerald-600 px-4 py-3 rounded-2xl flex items-center justify-between shadow-sm animate-fade-in-down">
+            <div class="flex items-center">
+                <i class="fas fa-check-circle mr-3 text-lg"></i>
+                <span class="text-sm font-bold uppercase tracking-wider">
+                    {{ session('success') }}
+                </span>
+            </div>
 
-    <div class="w-full bg-white rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden">
-        <div class="px-8 py-6 bg-slate-900 border-b border-slate-800 flex items-center justify-between">
-            <h3 class="text-[10px] font-black text-amber-500 uppercase tracking-[0.2em]">
-                Internal Staff Credentials
+            <button onclick="document.getElementById('alert-success').remove()"
+                class="text-emerald-500 hover:text-emerald-700 transition-colors">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    @endif
+    <div class="w-full mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+
+        <div>
+            <h2 class="text-3xl font-extrabold text-slate-800 tracking-tight">
+                Administrator Management
+            </h2>
+
+            <p class="text-slate-500 text-sm mt-1">
+                Kelola data administrator, hak akses, dan keamanan sistem dashboard.
+            </p>
+        </div>
+
+        <a href="{{ route('admin.admin.create') }}"
+            class="inline-flex items-center justify-center px-6 py-3 bg-rose-600 hover:bg-rose-700 text-white rounded-xl font-bold text-sm uppercase tracking-widest transition-all shadow-lg shadow-rose-200 group">
+
+            <i class="fas fa-user-shield mr-2 group-hover:rotate-12 transition-transform"></i>
+            Tambah Admin
+        </a>
+    </div>
+
+    <div class="w-full bg-white rounded-[2rem] shadow-sm border border-slate-100 overflow-hidden">
+
+        <div class="px-8 py-5 bg-slate-50/50 border-b border-slate-100 flex justify-between items-center">
+
+            <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
+                Daftar Administrator Sistem
             </h3>
-            <div class="flex items-center space-x-2">
-                <span class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Security Level: Encrypted</span>
-                <i class="fas fa-lock text-amber-500 text-xs"></i>
+
+            <div class="flex items-center bg-white px-3 py-1 rounded-full border border-slate-200 shadow-sm">
+                <span class="text-[9px] font-black text-rose-600 uppercase tracking-widest">
+                    Total: {{ $admins->count() }} Admin
+                </span>
             </div>
         </div>
 
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
                 <thead>
-                    <tr class="bg-slate-50/50 border-b border-slate-100">
-                        <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Administrator Info</th>
-                        <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Email Address</th>
-                        <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Access Role</th>
-                        <th class="px-8 py-5 text-right text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Management</th>
+                    <tr class="bg-white border-b border-slate-50">
+
+                        <th class="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
+                            Profil Admin
+                        </th>
+
+                        <th class="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
+                            Kontak & Email
+                        </th>
+
+                        <th class="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
+                            Role & Status
+                        </th>
+
+                        <th class="px-8 py-4 text-right text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
+                            Aksi
+                        </th>
                     </tr>
                 </thead>
 
                 <tbody class="divide-y divide-slate-50">
-                    @foreach($admins as $admin)
-                        <tr class="hover:bg-amber-50/30 transition-all group">
-                            <td class="px-8 py-6">
+
+                    @forelse($admins as $admin)
+                        <tr class="hover:bg-rose-50/30 transition-colors group">
+
+                            <td class="px-8 py-5">
                                 <div class="flex items-center space-x-4">
-                                    <div class="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center text-slate-400 group-hover:bg-amber-100 group-hover:text-amber-600 transition-all duration-300">
-                                        <i class="fas fa-user-shield text-xl"></i>
-                                    </div>
+
+                                    @if ($admin->avatar)
+                                        <img src="{{ asset('storage/' . $admin->avatar) }}" alt="Avatar"
+                                            class="w-12 h-12 rounded-2xl object-cover border border-slate-200">
+                                    @else
+                                        <div
+                                            class="w-12 h-12 bg-rose-100 rounded-2xl flex items-center justify-center text-rose-600 font-black border border-rose-200 group-hover:bg-rose-600 group-hover:text-white transition-all duration-300">
+
+                                            {{ strtoupper(substr($admin->name, 0, 1)) }}
+                                        </div>
+                                    @endif
+
                                     <div>
-                                        <p class="text-sm font-black text-slate-800 uppercase tracking-tight">
+                                        <p class="text-sm font-bold text-slate-800 leading-none mb-1.5">
                                             {{ $admin->name }}
                                         </p>
-                                        <p class="text-[10px] text-slate-400 font-bold tracking-widest mt-0.5">
-                                            STAFF ID: #{{ str_pad($admin->id, 3, '0', STR_PAD_LEFT) }}
+
+                                        <p class="text-[10px] text-slate-400 font-bold tracking-widest uppercase">
+                                            ADMIN ID:
+                                            #{{ str_pad($admin->id, 4, '0', STR_PAD_LEFT) }}
                                         </p>
                                     </div>
                                 </div>
                             </td>
 
-                            <td class="px-8 py-6">
-                                <div class="flex items-center space-x-2">
-                                    <div class="w-2 h-2 rounded-full bg-emerald-400"></div>
-                                    <span class="text-sm font-medium text-slate-600">{{ $admin->email }}</span>
+                            <td class="px-8 py-5">
+
+                                <div class="flex flex-col space-y-1">
+                                    <div class="flex items-center space-x-2">
+                                        <i class="far fa-envelope text-rose-400 text-[10px]"></i>
+
+                                        <span class="text-xs font-medium text-slate-600">
+                                            {{ $admin->email }}
+                                        </span>
+                                    </div>
+
+                                    <div class="flex items-center space-x-2">
+                                        <i class="fas fa-phone-alt text-rose-400 text-[10px]"></i>
+
+                                        <span class="text-xs font-medium text-slate-500">
+                                            {{ $admin->phone ?? 'No Phone Number' }}
+                                        </span>
+                                    </div>
                                 </div>
                             </td>
 
-                            <td class="px-8 py-6">
-                                <span class="px-3 py-1.5 bg-slate-900 text-amber-500 rounded-lg text-[9px] font-black uppercase tracking-[0.1em] border border-slate-800">
-                                    {{ $admin->role }}
-                                </span>
+                            <td class="px-8 py-5">
+
+                                <div class="flex flex-col gap-2">
+
+                                    <span
+                                        class="px-3 py-1 text-[9px] font-black rounded-lg border uppercase bg-rose-50 text-rose-600 border-rose-100 flex w-fit items-center">
+
+                                        <i class="fas fa-user-shield mr-1.5"></i>
+
+                                        {{ $admin->role }}
+                                    </span>
+
+                                    <span class="text-[10px] text-slate-400 font-medium">
+                                        Created :
+                                        {{ $admin->created_at->format('d M Y') }}
+                                    </span>
+                                </div>
                             </td>
 
-                            <td class="px-8 py-6">
-                                <div class="flex justify-end items-center space-x-2 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                            <td class="px-8 py-5 text-right">
+
+                                <div class="flex justify-end gap-2">
                                     <a href="{{ route('admin.admin.edit', $admin->id) }}"
-                                        class="w-9 h-9 flex items-center justify-center rounded-xl bg-slate-100 text-slate-400 hover:bg-amber-500 hover:text-white transition-all">
-                                        <i class="fas fa-pen text-xs"></i>
+                                        class="w-8 h-8 flex items-center justify-center hover:bg-white hover:shadow-md rounded-lg transition-all group/edit">
+
+                                        <i class="fas fa-edit text-slate-400 group-hover/edit:text-rose-600"></i>
                                     </a>
 
                                     <form action="{{ route('admin.admin.destroy', $admin->id) }}" method="POST"
-                                        onsubmit="return confirm('Hapus akun administrator ini?')">
-                                        @csrf @method('DELETE')
+                                        onsubmit="return confirm('Apakah Anda yakin ingin menghapus administrator {{ $admin->name }}?')">
+
+                                        @csrf
+                                        @method('DELETE')
+
                                         <button type="submit"
-                                            class="w-9 h-9 flex items-center justify-center rounded-xl bg-slate-100 text-slate-400 hover:bg-rose-600 hover:text-white transition-all">
-                                            <i class="fas fa-trash-alt text-xs"></i>
+                                            class="w-8 h-8 flex items-center justify-center hover:bg-white hover:shadow-md rounded-lg transition-all group/del">
+
+                                            <i class="fas fa-trash text-slate-400 group-hover/del:text-rose-600"></i>
                                         </button>
                                     </form>
+
                                 </div>
                             </td>
                         </tr>
-                    @endforeach
+
+                    @empty
+
+                        <tr>
+                            <td colspan="4" class="px-8 py-16 text-center">
+
+                                <div class="flex flex-col items-center">
+
+                                    <div
+                                        class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4 border border-slate-100">
+
+                                        <i class="fas fa-user-shield text-slate-200 text-2xl"></i>
+                                    </div>
+
+                                    <p class="text-slate-400 font-bold text-sm uppercase tracking-widest">
+                                        Database Admin Kosong
+                                    </p>
+
+                                </div>
+                            </td>
+                        </tr>
+                    @endforelse
+
                 </tbody>
             </table>
         </div>
 
-        <div class="px-8 py-5 bg-slate-50 border-t border-slate-100 flex justify-between items-center">
-            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                Root System Authorization Required
+        <div class="px-8 py-3 bg-slate-50/30 border-t border-slate-100">
+
+            <p class="text-[9px] font-bold text-slate-300 uppercase tracking-[0.2em] text-center">
+
+                Secure Administrator Environment &bull; Access Control Verified
+
             </p>
-            <div class="flex items-center text-amber-600 space-x-1">
-                <i class="fas fa-circle text-[6px]"></i>
-                <span class="text-[9px] font-black uppercase tracking-widest">High-Level Data</span>
-            </div>
         </div>
     </div>
 
