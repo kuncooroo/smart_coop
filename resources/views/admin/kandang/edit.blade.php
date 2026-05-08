@@ -70,11 +70,12 @@
                             </div>
 
                             <button type="button" id="remove-img-btn"
-                                class="hidden absolute top-4 right-4 bg-rose-600 text-white w-10 h-10 rounded-xl items-center justify-center shadow-lg hover:bg-rose-700 transition-all z-10">
+                                class="absolute top-4 right-4 bg-rose-600 text-white w-10 h-10 rounded-xl items-center justify-center shadow-lg hover:bg-rose-700 transition-all z-10 {{ $kandang->image ? 'flex' : 'hidden' }}">
                                 <i class="fas fa-trash-alt"></i>
                             </button>
                         </div>
                         <input type="file" name="image" id="image" class="hidden" accept="image/*">
+                        <input type="hidden" name="remove_image" id="remove-image-flag" value="0">
                     </div>
                     <p class="text-center text-[10px] text-slate-400 mt-3 font-bold uppercase tracking-tighter">
                         <i class="fas fa-info-circle mr-1 text-rose-600"></i> Maksimal 2MB (JPG/PNG)
@@ -194,24 +195,33 @@
         const imageInput = document.getElementById('image');
         const previewImg = document.getElementById('preview-img');
         const removeBtn = document.getElementById('remove-img-btn');
-        const originalImage = "{{ $currentImage }}";
+        const removeFlag = document.getElementById('remove-image-flag');
+
+        const defaultImage =
+            "https://ui-avatars.com/api/?name={{ urlencode($kandang->name) }}&background=F1F5F9&color=64748B&bold=true";
 
         imageInput.onchange = evt => {
             const [file] = imageInput.files;
+
             if (file) {
                 previewImg.src = URL.createObjectURL(file);
+
                 removeBtn.classList.remove('hidden');
                 removeBtn.classList.add('flex');
-                previewImg.classList.add('animate-pulse');
-                setTimeout(() => previewImg.classList.remove('animate-pulse'), 500);
+
+                removeFlag.value = "0";
             }
         }
 
         removeBtn.onclick = () => {
+            previewImg.src = defaultImage;
+
             imageInput.value = "";
-            previewImg.src = originalImage;
+
             removeBtn.classList.add('hidden');
             removeBtn.classList.remove('flex');
+
+            removeFlag.value = "1";
         }
     </script>
 @endsection

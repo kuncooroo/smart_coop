@@ -9,22 +9,58 @@ use Illuminate\Http\Request;
 
 class DeviceController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $devices = Device::with('kandang.user')->get();
-        return view('Admin.device.index', compact('devices'));
+        $kandangId = $request->kandang_id;
+
+        $devices = Device::with('kandang.user')
+            ->when($kandangId, function ($query) use ($kandangId) {
+                $query->where('kandang_id', $kandangId);
+            })
+            ->get();
+
+        $kandang = null;
+
+        if ($kandangId) {
+            $kandang = Kandang::find($kandangId);
+        }
+
+        return view('Admin.device.index', compact('devices', 'kandang'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
         $kandangs = Kandang::all();
-        return view('Admin.device.create', compact('kandangs'));
+
+        $selectedKandang = $request->kandang_id;
+
+        return view('Admin.device.create', compact(
+            'kandangs',
+            'selectedKandang'
+        ));
     }
 
     public function store(Request $request)
     {
-        Device::create($request->all());
-        return redirect()->route('admin.device.index');
+        $request->validate([
+            'device_name' => 'required',
+            'device_id' => 'required|unique:devices,device_id',
+            'kandang_id' => 'required|exists:kandangs,id',
+            'profile_image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+        ]);
+
+        $data = $request->all();
+
+        if ($request->hasFile('profile_image')) {
+            $data['profile_image'] = $request->file('profile_image')
+                ->store('devices', 'public');
+        }
+
+        Device::create($data);
+
+        return redirect()
+            ->route('Admin.devices.index')
+            ->with('success', 'Device berhasil ditambahkan');
     }
 
     public function edit($id)
@@ -38,9 +74,29 @@ class DeviceController extends Controller
     public function update(Request $request, $id)
     {
         $device = Device::findOrFail($id);
-        $device->update($request->all());
 
-        return redirect()->route('admin.device.index');
+        $request->validate([
+            'device_name' => 'required',
+            'kandang_id' => 'required|exists:kandangs,id',
+            'profile_image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+        ]);
+
+        $data = $request->all();
+
+        if ($request->hasFile('profile_image')) {
+            $data['profile_image'] = $request->file('profile_image')
+                ->store('devices', 'public');
+        }
+
+        if ($request->remove_image == "1") {
+            $data['profile_image'] = null;
+        }
+
+        $device->update($data);
+
+        return redirect()
+            ->route('Admin.devices.index')
+            ->with('success', 'Device berhasil diupdate');
     }
 
     public function destroy($id)

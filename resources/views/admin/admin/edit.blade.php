@@ -11,7 +11,8 @@
             <div>
                 <h2 class="text-3xl font-extrabold text-slate-800 tracking-tight">Edit Administrator</h2>
                 <p class="text-slate-500 text-sm mt-1">Perbarui informasi kredensial dan hak akses administrator
-                    <strong>{{ $admin->name }}</strong>.</p>
+                    <strong>{{ $admin->name }}</strong>.
+                </p>
             </div>
         </div>
     </div>
@@ -65,23 +66,34 @@
                                 <span class="text-white text-[10px] font-black uppercase tracking-widest">Update
                                     Photo</span>
                             </div>
+                            <button type="button" id="btn-remove-avatar"
+                                class="absolute top-4 right-4 bg-rose-500 text-white w-10 h-10 rounded-2xl shadow-lg flex items-center justify-center hover:scale-110 transition-transform z-20 {{ $admin->avatar ? '' : 'hidden' }}">
+                                <i class="fas fa-trash text-sm"></i>
+                            </button>
                         </div>
 
                         <input type="file" name="avatar" id="avatar" class="hidden" accept="image/*">
+                        <input type="hidden" name="remove_avatar" id="remove-avatar-flag" value="0">
                     </div>
 
                     <div class="mt-8 space-y-3">
                         <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex items-center gap-4">
                             <div
-                                class="w-8 h-8 bg-amber-400 rounded-lg flex items-center justify-center text-white text-xs shadow-sm shadow-amber-200">
-                                <i class="fas fa-user-shield"></i>
+                                class="w-8 h-8 bg-slate-400 rounded-lg flex items-center justify-center text-white text-xs shadow-sm">
+                                <i class="fas fa-clock"></i>
                             </div>
+
                             <div>
                                 <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">
-                                    Status Akun</p>
-                                <p class="text-xs font-bold text-slate-600">Administrator Aktif</p>
+                                    Terdaftar Sejak
+                                </p>
+
+                                <p class="text-xs font-bold text-slate-600">
+                                    {{ $admin->created_at->format('d M Y') }}
+                                </p>
                             </div>
                         </div>
+
                     </div>
                 </div>
 
@@ -174,14 +186,38 @@
     <script>
         const imageInput = document.getElementById('avatar');
         const previewImg = document.getElementById('preview-img');
+        const btnRemove = document.getElementById('btn-remove-avatar');
+        const removeFlag = document.getElementById('remove-avatar-flag');
+
+        const defaultAvatar =
+            "https://ui-avatars.com/api/?name={{ urlencode($admin->name) }}&background=FFF1F2&color=E11D48&bold=true";
 
         imageInput.onchange = evt => {
             const [file] = imageInput.files;
+
             if (file) {
                 previewImg.src = URL.createObjectURL(file);
+
+                btnRemove.classList.remove('hidden');
+
+                removeFlag.value = "0";
+
                 previewImg.classList.add('animate-pulse');
-                setTimeout(() => previewImg.classList.remove('animate-pulse'), 500);
+
+                setTimeout(() => {
+                    previewImg.classList.remove('animate-pulse');
+                }, 500);
             }
+        }
+
+        btnRemove.onclick = () => {
+            previewImg.src = defaultAvatar;
+
+            imageInput.value = "";
+
+            btnRemove.classList.add('hidden');
+
+            removeFlag.value = "1";
         }
     </script>
 @endsection

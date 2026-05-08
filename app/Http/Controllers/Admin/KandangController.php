@@ -57,7 +57,7 @@ class KandangController extends Controller
 
         $data = $request->validate([
             'name'            => 'required|string|max:255',
-            'user_id'         => 'required|exists:users,id', 
+            'user_id'         => 'required|exists:users,id',
             'capacity'        => 'required|integer|min:0',
             'current_chicken' => 'required|integer|min:0',
             'timer_open'      => 'nullable',
@@ -65,6 +65,20 @@ class KandangController extends Controller
             'image'           => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
+        if ($request->remove_image == "1") {
+
+            if (
+                $kandang->image &&
+                Storage::disk('public')->exists($kandang->image)
+            ) {
+
+                Storage::disk('public')->delete($kandang->image);
+
+                $kandang->image = null;
+                $kandang->save();
+            }
+        }
+        
         if ($request->hasFile('image')) {
             if ($kandang->image) {
                 Storage::disk('public')->delete($kandang->image);

@@ -46,10 +46,14 @@
             <table class="w-full text-left border-collapse">
                 <thead>
                     <tr class="bg-white border-b border-slate-50">
-                        <th class="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Profil Pengguna</th>
-                        <th class="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Kontak & Username</th>
-                        <th class="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Detail & Gender</th>
-                        <th class="px-8 py-4 text-right text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Aksi</th>
+                        <th class="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Profil
+                            Pengguna</th>
+                        <th class="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Kontak &
+                            Username</th>
+                        <th class="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Detail &
+                            Gender</th>
+                        <th class="px-8 py-4 text-right text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
+                            Aksi</th>
                     </tr>
                 </thead>
 
@@ -58,10 +62,12 @@
                         <tr class="hover:bg-rose-50/30 transition-colors group">
                             <td class="px-8 py-5">
                                 <div class="flex items-center space-x-4">
-                                    @if($user->profile)
-                                        <img src="{{ asset('storage/' . $user->profile) }}" alt="Avatar" class="w-12 h-12 rounded-2xl object-cover border border-slate-200">
+                                    @if ($user->profile)
+                                        <img src="{{ asset('storage/' . $user->profile) }}" alt="Avatar"
+                                            class="w-12 h-12 rounded-2xl object-cover border border-slate-200">
                                     @else
-                                        <div class="w-12 h-12 bg-rose-100 rounded-2xl flex items-center justify-center text-rose-600 font-black border border-rose-200 group-hover:bg-rose-600 group-hover:text-white transition-all duration-300">
+                                        <div
+                                            class="w-12 h-12 bg-rose-100 rounded-2xl flex items-center justify-center text-rose-600 font-black border border-rose-200 group-hover:bg-rose-600 group-hover:text-white transition-all duration-300">
                                             {{ strtoupper(substr($user->nama_lengkap, 0, 1)) }}
                                         </div>
                                     @endif
@@ -91,9 +97,21 @@
 
                             <td class="px-8 py-5">
                                 <div class="flex flex-col gap-2">
-                                    <span class="px-3 py-1 text-[9px] font-black rounded-lg border uppercase {{ $user->jenis_kelamin == 'L' ? 'bg-blue-50 text-blue-600 border-blue-100' : 'bg-pink-50 text-pink-600 border-pink-100' }} flex w-fit items-center">
-                                        <i class="fas {{ $user->jenis_kelamin == 'L' ? 'fa-mars' : 'fa-venus' }} mr-1.5"></i>
-                                        {{ $user->jenis_kelamin == 'L' ? 'Laki-laki' : 'Perempuan' }}
+                                    <span
+                                        class="px-3 py-1 text-[9px] font-black rounded-lg border uppercase
+                                         {{ $user->jenis_kelamin == 'L'
+                                             ? 'bg-blue-50 text-blue-600 border-blue-100'
+                                             : ($user->jenis_kelamin == 'P'
+                                                 ? 'bg-pink-50 text-pink-600 border-pink-100'
+                                                 : 'bg-slate-50 text-slate-500 border-slate-100') }}
+                                        flex w-fit items-center">
+
+                                        <i
+                                            class="fas
+                                        {{ $user->jenis_kelamin == 'L' ? 'fa-mars' : ($user->jenis_kelamin == 'P' ? 'fa-venus' : 'fa-user') }}
+                                        mr-1.5"></i>
+
+                                        {{ $user->jenis_kelamin == 'L' ? 'Laki-laki' : ($user->jenis_kelamin == 'P' ? 'Perempuan' : 'Belum Diisi') }}
                                     </span>
                                     <span class="text-[10px] text-slate-400 font-medium">
                                         {{ $user->no_hp ?? 'No Phone' }}
@@ -123,7 +141,8 @@
                         <tr>
                             <td colspan="4" class="px-8 py-16 text-center">
                                 <div class="flex flex-col items-center">
-                                    <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4 border border-slate-100">
+                                    <div
+                                        class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4 border border-slate-100">
                                         <i class="fas fa-users-slash text-slate-200 text-2xl"></i>
                                     </div>
                                     <p class="text-slate-400 font-bold text-sm uppercase tracking-widest">
