@@ -15,7 +15,7 @@
             @endif
         </div>
 
-        <a href="{{ route('admin.device.create') }}"
+        <a href="{{ route('admin.device.create', ['kandang_id' => request('kandang_id')]) }}"
             class="inline-flex items-center justify-center px-6 py-3 bg-rose-600 hover:bg-rose-700 text-white rounded-xl font-bold text-sm uppercase tracking-widest transition-all shadow-lg shadow-rose-200 group">
 
             <i class="fas fa-plus-circle mr-2 group-hover:rotate-12 transition-transform"></i>

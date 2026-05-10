@@ -25,19 +25,18 @@ class DeviceController extends Controller
             $kandang = Kandang::find($kandangId);
         }
 
-        return view('Admin.device.index', compact('devices', 'kandang'));
+        return view('admin.device.index', compact('devices', 'kandang'));
     }
 
     public function create(Request $request)
     {
-        $kandangs = Kandang::all();
+        $kandang = null;
 
-        $selectedKandang = $request->kandang_id;
+        if ($request->kandang_id) {
+            $kandang = Kandang::findOrFail($request->kandang_id);
+        }
 
-        return view('Admin.device.create', compact(
-            'kandangs',
-            'selectedKandang'
-        ));
+        return view('admin.device.create', compact('kandang'));
     }
 
     public function store(Request $request)
@@ -49,7 +48,13 @@ class DeviceController extends Controller
             'profile_image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        $data = $request->all();
+        $data = $request->only([
+            'device_name',
+            'device_id',
+            'kandang_id',
+            'installation_date',
+            'status'
+        ]);
 
         if ($request->hasFile('profile_image')) {
             $data['profile_image'] = $request->file('profile_image')
@@ -59,7 +64,9 @@ class DeviceController extends Controller
         Device::create($data);
 
         return redirect()
-            ->route('Admin.devices.index')
+            ->route('admin.device.index', [
+                'kandang_id' => $request->kandang_id
+            ])
             ->with('success', 'Device berhasil ditambahkan');
     }
 
@@ -68,7 +75,7 @@ class DeviceController extends Controller
         $device = Device::findOrFail($id);
         $kandangs = Kandang::all();
 
-        return view('Admin.device.edit', compact('device', 'kandangs'));
+        return view('admin.device.edit', compact('device', 'kandangs'));
     }
 
     public function update(Request $request, $id)
@@ -95,7 +102,7 @@ class DeviceController extends Controller
         $device->update($data);
 
         return redirect()
-            ->route('Admin.devices.index')
+            ->route('admin.device.index')
             ->with('success', 'Device berhasil diupdate');
     }
 
