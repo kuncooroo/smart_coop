@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use PhpMqtt\Client\MqttClient;
 use App\Models\Suhu;
 use App\Models\Kandang;
+use App\Models\Ayam;
 
 class MqttListen extends Command
 {
@@ -25,31 +26,66 @@ class MqttListen extends Command
 
         echo "MQTT CONNECTED\n";
 
-        $mqtt->subscribe('kandang/sensor', function ($topic, $message) {
+        $mqtt->subscribe('kandang/ayam', function ($topic, $message) {
 
-            echo "MESSAGE MASUK:\n";
+            echo "\n=== DATA AYAM ===\n";
             echo $message . "\n";
 
             $data = json_decode($message, true);
 
             try {
 
-                Suhu::create([
+                Ayam::create([
                     'kandang_id' => $data['kandang_id'],
                     'device_id' => $data['device_id'],
-                    'temperature' => $data['temperature']
+                    'direction' => $data['direction'],
+                    'source' => $data['source']
                 ]);
 
-                Kandang::where('id', $data['kandang_id'])
-                    ->update([
-                        'current_chicken' => $data['current_chicken']
-                    ]);
+                $kandang = Kandang::find($data['kandang_id']);
 
-                echo "BERHASIL INSERT DATABASE\n";
+                if ($kandang) {
+
+                    echo "KANDANG DITEMUKAN\n";
+
+                    echo "CURRENT CHICKEN SEBELUM: ";
+                    echo $kandang->current_chicken . "\n";
+
+                    echo "DIRECTION:";
+                    var_dump($data['direction']);
+
+                    if (trim($data['direction']) === 'IN') {
+
+                        $kandang->current_chicken =
+                            ($kandang->current_chicken ?? 0) + 1;
+
+                        $kandang->save();
+
+                        echo "AYAM BERTAMBAH\n";
+                    } elseif (trim($data['direction']) === 'OUT') {
+
+                        if (($kandang->current_chicken ?? 0) > 0) {
+
+                            $kandang->current_chicken =
+                                $kandang->current_chicken - 1;
+
+                            $kandang->save();
+
+                            echo "AYAM BERKURANG\n";
+                        }
+                    }
+                    echo "CURRENT CHICKEN SESUDAH: ";
+                    echo $kandang->fresh()->current_chicken . "\n";
+                } else {
+
+                    echo "KANDANG TIDAK DITEMUKAN\n";
+                }
+
+                echo "BERHASIL INSERT AYAM\n";
             } catch (\Exception $e) {
 
-                echo "ERROR DATABASE:\n";
-                echo $e->getMessage();
+                echo "ERROR AYAM:\n";
+                echo $e->getMessage() . "\n";
             }
         }, 0);
 
