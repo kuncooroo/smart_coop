@@ -141,11 +141,14 @@
                                 </div>
                             </div>
                             @if ($servo)
-                                <form action="{{ route('commands.store') }}" method="POST" class="m-0">
+                                <form
+                                    action="{{ $servo->door_status == 'TERBUKA' ? route('servo.close') : route('servo.open') }}"
+                                    method="POST" class="m-0">
+
                                     @csrf
+
                                     <input type="hidden" name="device_id" value="{{ $servo->device_id }}">
-                                    <input type="hidden" name="command"
-                                        value="{{ $servo->door_status == 'TERBUKA' ? 'CLOSE_DOOR' : 'OPEN_DOOR' }}">
+
                                     <button type="submit"
                                         class="px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-tighter transition-all shadow-sm {{ $servo->door_status == 'TERBUKA' ? 'bg-emerald-600 text-white' : 'bg-orange-600 text-white hover:bg-orange-700' }}">
                                         {{ $servo->door_status == 'TERBUKA' ? 'Tutup' : 'Buka' }}
@@ -168,11 +171,13 @@
                                 </div>
                             </div>
                             @if ($lamp)
-                                <form action="{{ route('commands.store') }}" method="POST" class="m-0">
+                                <form action="{{ $lamp->light_status == 'HIDUP' ? route('lamp.off') : route('lamp.on') }}"
+                                    method="POST" class="m-0">
+
                                     @csrf
+
                                     <input type="hidden" name="device_id" value="{{ $lamp->device_id }}">
-                                    <input type="hidden" name="command"
-                                        value="{{ $lamp->light_status == 'HIDUP' ? 'LIGHT_OFF' : 'LIGHT_ON' }}">
+
                                     <button type="submit"
                                         class="relative inline-flex items-center h-5 w-10 cursor-pointer rounded-full transition-colors {{ $lamp->light_status == 'HIDUP' ? 'bg-orange-500' : 'bg-slate-300' }}">
                                         <span

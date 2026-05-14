@@ -12,8 +12,11 @@ use App\Http\Controllers\Public\ActivityLogController;
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
-use App\Models\Command;
+use App\Services\MqttService;
+use App\Models\Device;
 use Illuminate\Http\Request;
+// use App\Models\Command;
+// use Illuminate\Http\Request;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -38,7 +41,7 @@ Route::middleware('auth')->group(function () {
     Route::put('/monitoring/update/{id}', [MonitoringController::class, 'update'])->name('monitoring.update');
     Route::delete('/monitoring/destroy/{id}', [MonitoringController::class, 'destroy'])->name('monitoring.destroy');
     Route::put('/monitoring/settings/{kandang_id}', [MonitoringController::class, 'updateSettings'])->name('settings.update');
-    Route::post('/commands', [MonitoringController::class, 'storeCommand'])->name('commands.store');
+    // Route::post('/commands', [MonitoringController::class, 'storeCommand'])->name('commands.store');
     Route::get('/devices', [DeviceController::class, 'index'])->name('devices.index');
     Route::get('/devices/create', [DeviceController::class, 'create'])->name('devices.create');
     Route::post('/devices', [DeviceController::class, 'store'])->name('devices.store');
@@ -55,20 +58,68 @@ Route::middleware('auth')->group(function () {
         return back();
     })->name('notif.read')->middleware('auth');
 
-    Route::post('/commands', function (Request $request) {
-        $request->validate([
-            'device_id' => 'required',
-            'command' => 'required'
-        ]);
+    // Route::post('/commands', function (Request $request) {
+    //     $request->validate([
+    //         'device_id' => 'required',
+    //         'command' => 'required'
+    //     ]);
 
-        Command::create([
-            'device_id'    => $request->device_id,
-            'command_type' => $request->command,
-            'status'       => 'pending'
-        ]);
+    //     Command::create([
+    //         'device_id'    => $request->device_id,
+    //         'command_type' => $request->command,
+    //         'status'       => 'pending'
+    //     ]);
 
-        return back()->with('success', 'Perintah berhasil dikirim ke perangkat.');
-    })->name('commands.store');
+    //     return back()->with('success', 'Perintah berhasil dikirim ke perangkat.');
+    // })->name('commands.store');
+
+    Route::post('/servo/open', function (Request $request) {
+
+        MqttService::publish('kandang/servo', 'OPEN');
+
+        Device::where('device_id', $request->device_id)
+            ->update([
+                'door_status' => 'TERBUKA'
+            ]);
+
+        return back()->with('success', 'Pintu dibuka');
+    })->name('servo.open');
+
+    Route::post('/servo/close', function (Request $request) {
+
+        MqttService::publish('kandang/servo', 'CLOSE');
+
+        Device::where('device_id', $request->device_id)
+            ->update([
+                'door_status' => 'TERTUTUP'
+            ]);
+
+        return back()->with('success', 'Pintu ditutup');
+    })->name('servo.close');
+
+    Route::post('/lamp/on', function (Request $request) {
+
+        MqttService::publish('kandang/lamp', 'ON');
+
+        Device::where('device_id', $request->device_id)
+            ->update([
+                'light_status' => 'HIDUP'
+            ]);
+
+        return back()->with('success', 'Lampu dinyalakan');
+    })->name('lamp.on');
+
+    Route::post('/lamp/off', function (Request $request) {
+
+        MqttService::publish('kandang/lamp', 'OFF');
+
+        Device::where('device_id', $request->device_id)
+            ->update([
+                'light_status' => 'MATI'
+            ]);
+
+        return back()->with('success', 'Lampu dimatikan');
+    })->name('lamp.off');
 
     Route::get('/api/kandang', function () {
         return \App\Models\Kandang::select('id', 'current_chicken')->get();
@@ -93,7 +144,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('/user', \App\Http\Controllers\Admin\UserController::class);
         Route::resource('/device', \App\Http\Controllers\Admin\DeviceController::class);
         Route::resource('/kandang', \App\Http\Controllers\Admin\KandangController::class);
-        
+
         Route::middleware(['superadmin'])->group(function () {
             Route::resource('/admin', AdminController::class);
         });
