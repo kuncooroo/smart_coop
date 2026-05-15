@@ -297,7 +297,6 @@
         <script>
             let previousCounts = {};
 
-            // ambil data awal
             function initData() {
                 fetch('/api/kandang')
                     .then(res => res.json())
@@ -308,7 +307,6 @@
                     });
             }
 
-            // fetch tiap 3 detik
             function fetchData() {
                 fetch('/api/kandang')
                     .then(res => res.json())
@@ -346,7 +344,6 @@
                 }, 800);
             }
 
-            // jalanin
             initData();
             setInterval(fetchData, 3000);
         </script>

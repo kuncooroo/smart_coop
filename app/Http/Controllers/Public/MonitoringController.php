@@ -19,7 +19,9 @@ class MonitoringController extends Controller
             'suhus' => function ($q) {
                 $q->latest()->limit(1);
             }
-        ])->get();
+        ])
+            ->where('user_id', auth()->id())
+            ->get();
 
         return view('Public.monitoring.index', compact('kandangs'));
     }
@@ -31,7 +33,8 @@ class MonitoringController extends Controller
 
     public function edit($id)
     {
-        $kandang = Kandang::findOrFail($id);
+        $kandang = Kandang::where('user_id', auth()->id())
+            ->findOrFail($id);
         return view('Public.monitoring.edit', compact('kandang'));
     }
 
@@ -48,6 +51,7 @@ class MonitoringController extends Controller
         ]);
 
         $data = $request->all();
+        $data['user_id'] = auth()->id();
 
         if ($request->hasFile('image')) {
             $data['image'] = $request->file('image')->store('kandang', 'public');
@@ -63,7 +67,8 @@ class MonitoringController extends Controller
 
     public function update(Request $request, $id)
     {
-        $kandang = Kandang::findOrFail($id);
+        $kandang = Kandang::where('user_id', auth()->id())
+            ->findOrFail($id);
 
         $request->validate([
             'name' => 'required|string|max:255',
@@ -76,36 +81,51 @@ class MonitoringController extends Controller
         $data = $request->except(['image']);
 
         if ($request->hasFile('image')) {
+
             if ($kandang->image) {
                 Storage::disk('public')->delete($kandang->image);
             }
-            $data['image'] = $request->file('image')->store('kandang', 'public');
+
+            $data['image'] = $request->file('image')
+                ->store('kandang', 'public');
         } elseif ($request->remove_image == "1") {
+
             if ($kandang->image) {
                 Storage::disk('public')->delete($kandang->image);
             }
+
             $data['image'] = null;
         }
 
         $kandang->update($data);
-        return redirect()->route('monitoring.index')->with('success', 'Profil Kandang berhasil diperbarui!');
+
+        return redirect()
+            ->route('monitoring.index')
+            ->with('success', 'Profil Kandang berhasil diperbarui!');
     }
 
     public function destroy($id)
     {
-        Kandang::destroy($id);
+        $kandang = Kandang::where('user_id', auth()->id())
+            ->findOrFail($id);
+
+        $kandang->delete();
+
         return back()->with('success', 'Kandang berhasil dihapus!');
     }
 
     public function updateSettings(Request $request, $kandang_id)
     {
+        $kandang = Kandang::where('user_id', auth()->id())
+            ->findOrFail($kandang_id);
+
         $request->validate([
             'timer_open' => 'required',
             'timer_close' => 'required',
         ]);
 
         \App\Models\DeviceSetting::updateOrCreate(
-            ['kandang_id' => $kandang_id],
+            ['kandang_id' => $kandang->id],
             [
                 'timer_open'  => $request->timer_open,
                 'timer_close' => $request->timer_close,
@@ -113,6 +133,8 @@ class MonitoringController extends Controller
             ]
         );
 
-        return redirect()->route('monitoring.index')->with('success', 'Jadwal otomatis berhasil diaktifkan!');
+        return redirect()
+            ->route('monitoring.index')
+            ->with('success', 'Jadwal otomatis berhasil diaktifkan!');
     }
 }

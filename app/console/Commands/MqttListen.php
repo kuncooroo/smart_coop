@@ -26,6 +26,29 @@ class MqttListen extends Command
 
         echo "MQTT CONNECTED\n";
 
+        $mqtt->subscribe('kandang/sensor', function ($topic, $message) {
+
+            echo "\n=== DATA SUHU ===\n";
+            echo $message . "\n";
+
+            $data = json_decode($message, true);
+
+            try {
+
+                Suhu::create([
+                    'kandang_id' => $data['kandang_id'],
+                    'device_id' => $data['device_id'],
+                    'temperature' => $data['temperature']
+                ]);
+
+                echo "BERHASIL INSERT SUHU\n";
+            } catch (\Exception $e) {
+
+                echo "ERROR SUHU:\n";
+                echo $e->getMessage() . "\n";
+            }
+        }, 0);
+
         $mqtt->subscribe('kandang/ayam', function ($topic, $message) {
 
             echo "\n=== DATA AYAM ===\n";

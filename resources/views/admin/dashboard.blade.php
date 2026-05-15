@@ -1,84 +1,104 @@
 @extends('layouts.admin')
-@section('title', 'Admin Dashboard')
+@section('title', 'Super Admin Dashboard')
 
 @section('content')
-    <div class="w-full mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div class="w-full mb-10 flex justify-between items-center">
         <div>
-            <h2 class="text-3xl font-extrabold text-slate-800 tracking-tight">Dashboard Overview</h2>
-            <p class="text-slate-500 text-sm mt-1">Monitoring sistem dan kondisi kandang secara real-time.</p>
+            <h2 class="text-3xl font-extrabold text-slate-800 tracking-tight mb-1">Super Admin Panel</h2>
+            <p class="text-slate-500 text-sm font-medium">Ringkasan ekosistem sistem IoT dan manajemen akun.</p>
+        </div>
+        <div class="hidden md:flex items-center space-x-2 bg-indigo-50 px-4 py-2 rounded-xl border border-indigo-100">
+            <div class="w-2 h-2 bg-indigo-500 rounded-full animate-pulse"></div>
+            <span class="text-indigo-700 text-[10px] font-black uppercase tracking-widest">Sistem Aktif</span>
         </div>
     </div>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
 
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
         <div
-            class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100 flex items-center space-x-5 hover:border-rose-200 transition-all group">
+            class="bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-100 flex items-center space-x-4 hover:border-blue-200 transition-all group">
             <div
-                class="w-16 h-16 bg-rose-50 rounded-2xl flex items-center justify-center text-rose-500 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
-                <i class="fas fa-user-shield text-3xl"></i>
+                class="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-500 group-hover:scale-110 transition-transform">
+                <i class="fas fa-users text-2xl"></i>
             </div>
             <div>
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">Total Administrator</p>
-                <h2 class="text-3xl font-black text-slate-800 tracking-tight">
-                    {{ \App\Models\Admin::count() }}
-                    <span class="text-sm text-slate-300 font-bold ml-1 uppercase">Akun</span>
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">User Publik</p>
+                <h2 class="text-2xl font-black text-slate-800 tracking-tight">{{ $totalUser }}</h2>
+            </div>
+        </div>
+
+        <div
+            class="bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-100 flex items-center space-x-4 hover:border-emerald-200 transition-all group">
+            <div
+                class="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-500 group-hover:scale-110 transition-transform">
+                <i class="fas fa-microchip text-2xl"></i>
+            </div>
+            <div>
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Perangkat</p>
+                <h2 class="text-2xl font-black text-slate-800 tracking-tight">
+                    {{ $deviceOnline }}<span class="text-sm text-slate-300 font-bold ml-1">/{{ $totalDevice }}</span>
                 </h2>
             </div>
         </div>
 
         <div
-            class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100 flex items-center space-x-5 hover:border-indigo-200 transition-all group">
+            class="bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-100 flex items-center space-x-4 hover:border-rose-200 transition-all group">
             <div
-                class="w-16 h-16 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-500 group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-300">
-                <i class="fas fa-crown text-3xl"></i>
+                class="w-14 h-14 bg-rose-50 rounded-2xl flex items-center justify-center text-rose-500 group-hover:scale-110 transition-transform">
+                <i class="fas fa-user-shield text-2xl"></i>
             </div>
             <div>
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">Super Admin</p>
-                <h2 class="text-3xl font-black text-slate-800 tracking-tight">
-                    {{ \App\Models\Admin::where('role', 'superadmin')->count() }}
-                    <span class="text-sm text-slate-300 font-bold ml-1 uppercase">Akses</span>
-                </h2>
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Staff Admin</p>
+                <h2 class="text-2xl font-black text-slate-800 tracking-tight">{{ $totalAdmin }}</h2>
+            </div>
+        </div>
+
+        <div
+            class="bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-100 flex items-center space-x-4 hover:border-amber-200 transition-all group">
+            <div
+                class="w-14 h-14 bg-amber-50 rounded-2xl flex items-center justify-center text-amber-500 group-hover:scale-110 transition-transform">
+                <i class="fas fa-crown text-2xl"></i>
+            </div>
+            <div>
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">SuperAdmin</p>
+                <h2 class="text-2xl font-black text-slate-800 tracking-tight">{{ $totalSuperAdmin }}</h2>
             </div>
         </div>
     </div>
 
-    <div class="w-full">
-        <h3 class="text-xl font-black text-slate-800 tracking-tight mb-6">Quick Management</h3>
+    <div class="w-full mb-12">
+        <div class="mb-6">
+            <h3 class="text-2xl font-black text-slate-800 tracking-tight">Manajemen Kontrol</h3>
+            <p class="text-slate-500 text-sm font-medium">Kelola seluruh entitas di dalam ekosistem.</p>
+        </div>
+
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-            <a href="{{ route('admin.user.index') }}"
-                class="bg-white p-6 rounded-[2rem] border border-slate-100 flex items-center justify-between hover:bg-rose-600 group transition-all duration-300">
-                <div class="flex items-center space-x-4">
-                    <div
-                        class="w-12 h-12 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400 group-hover:bg-white/20 group-hover:text-white transition-colors">
-                        <i class="fas fa-users-cog"></i>
-                    </div>
-                    <div>
-                        <h4 class="font-bold text-slate-800 group-hover:text-white transition-colors">Kelola Pengguna</h4>
-                        <p class="text-xs text-slate-400 group-hover:text-rose-100 transition-colors">Manajemen akses user
-                            publik.</p>
-                    </div>
-                </div>
+            <div
+                class="bg-[#002855] p-8 rounded-[2.5rem] text-white flex items-center justify-between group overflow-hidden relative shadow-lg shadow-blue-900/20">
                 <i
-                    class="fas fa-chevron-right text-slate-200 group-hover:text-white group-hover:translate-x-2 transition-all"></i>
-            </a>
-
-            <a href="{{ route('admin.device.index') }}"
-                class="bg-white p-6 rounded-[2rem] border border-slate-100 flex items-center justify-between hover:bg-indigo-600 group transition-all duration-300">
-                <div class="flex items-center space-x-4">
-                    <div
-                        class="w-12 h-12 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400 group-hover:bg-white/20 group-hover:text-white transition-colors">
-                        <i class="fas fa-microchip"></i>
-                    </div>
-                    <div>
-                        <h4 class="font-bold text-slate-800 group-hover:text-white transition-colors">Master Device</h4>
-                        <p class="text-xs text-slate-400 group-hover:text-indigo-100 transition-colors">Konfigurasi hardware
-                            sistem.</p>
-                    </div>
+                    class="fas fa-users-cog absolute -right-4 -bottom-4 text-white/5 text-8xl -rotate-12 pointer-events-none"></i>
+                <div class="relative z-10">
+                    <h4 class="text-lg font-bold mb-1">Database Pengguna</h4>
+                    <p class="text-blue-200/70 text-xs">Atur akun dan pantau login pengguna.</p>
                 </div>
-                <i
-                    class="fas fa-chevron-right text-slate-200 group-hover:text-white group-hover:translate-x-2 transition-all"></i>
-            </a>
+                <a href="{{ route('admin.user.index') }}"
+                    class="relative z-50 cursor-pointer bg-white text-[#002855] px-6 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-orange-500 hover:text-white transition-all shadow-xl">
+                    Kelola User
+                </a>
+            </div>
 
+            <div
+                class="bg-slate-900 p-8 rounded-[2.5rem] text-white flex items-center justify-between group overflow-hidden relative shadow-lg shadow-slate-900/20">
+                <i
+                    class="fas fa-microchip absolute -right-4 -bottom-4 text-white/5 text-8xl -rotate-12 pointer-events-none"></i>
+                <div class="relative z-10">
+                    <h4 class="text-lg font-bold mb-1">Pusat Kendali Device</h4>
+                    <p class="text-slate-400 text-xs">Monitoring status dan kesehatan sensor.</p>
+                </div>
+                <a href="{{ route('admin.device.index') }}"
+                    class="relative z-50 cursor-pointer bg-white/10 border border-white/20 text-white px-6 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-white hover:text-slate-900 transition-all">
+                    Buka Device
+                </a>
+            </div>
         </div>
     </div>
 @endsection
