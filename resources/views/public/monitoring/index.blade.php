@@ -130,7 +130,7 @@
                             </div>
                         </div>
 
-                        <div
+                        <div id="servo-card-{{ $k->id }}"
                             class="p-4 rounded-2xl flex items-center justify-between {{ $servo && $servo->door_status == 'TERBUKA' ? 'bg-emerald-50 border border-emerald-100' : 'bg-[#002855] border border-[#002855]' }} transition-all">
                             <div class="flex items-center space-x-3">
                                 <div
@@ -167,7 +167,7 @@
                             @endif
                         </div>
 
-                        <div
+                        <div id="lamp-card-{{ $k->id }}"
                             class="p-4 rounded-2xl bg-white flex items-center justify-between border border-slate-100 {{ $lamp && $lamp->light_status == 'HIDUP' ? 'ring-1 ring-orange-500 bg-orange-50/30' : '' }}">
                             <div class="flex items-center space-x-3">
                                 <div
@@ -215,6 +215,14 @@
                                             {{ \Carbon\Carbon::parse($setting->timer_close)->format('H:i') }}
                                         </span>
                                     </div>
+                                    <form action="{{ route('settings.disable', $k->id) }}" method="POST">
+                                        @csrf
+                                        @method('PUT')
+
+                                        <button class="text-red-500 text-xs font-bold">
+                                            Matikan Schedule
+                                        </button>
+                                    </form>
                                 </div>
                             @else
                                 <div>
@@ -320,37 +328,38 @@
                     });
             }
 
-            function fetchData() {
-                fetch('/api/kandang')
-                    .then(res => res.json())
-                    .then(data => {
+            // function fetchData() {
+            //     fetch('/api/kandang')
+            //         .then(res => res.json())
+            //         .then(data => {
 
-                        data.forEach(k => {
+            //             data.forEach(k => {
 
-                            updateChicken(k.id, k.current_chicken);
+            //                 updateChicken(k.id, k.current_chicken);
 
-                            let servoStatus = document.getElementById(
-                                'servo-status-' + k.id
-                            );
+            //                 let servoStatus = document.getElementById(
+            //                     'servo-status-' + k.id
+            //                 );
 
-                            if (servoStatus && k.servo_status) {
-                                servoStatus.innerText = k.servo_status;
-                            }
+            //                 if (servoStatus && k.servo_status) {
+            //                     servoStatus.innerText = k.servo_status;
+            //                 }
 
-                            let lampStatus = document.getElementById(
-                                'lamp-status-' + k.id
-                            );
+            //                 let lampStatus = document.getElementById(
+            //                     'lamp-status-' + k.id
+            //                 );
 
-                            if (lampStatus && k.light_status) {
-                                lampStatus.innerText = k.light_status;
-                            }
+            //                 if (lampStatus && k.light_status) {
+            //                     lampStatus.innerText = k.light_status;
+            //                 }
 
-                        });
+            //             });
 
-                    });
-            }
+            //         });
+            // }
 
             function updateChicken(id, newValue) {
+
                 let oldValue = previousCounts[id] ?? newValue;
 
                 if (newValue > oldValue) {
@@ -362,7 +371,38 @@
                 previousCounts[id] = newValue;
 
                 let countEl = document.getElementById('chicken-count-' + id);
-                if (countEl) countEl.innerText = newValue;
+
+                if (countEl) {
+                    countEl.innerText = newValue;
+                }
+
+                let progressEl = document.getElementById('progress-' + id);
+
+                if (progressEl) {
+
+                    let maxText = progressEl.parentElement
+                        .querySelector('.flex.justify-between span:last-child')
+                        .innerText;
+
+                    let capacity = parseInt(maxText);
+
+                    let percent = capacity > 0 ?
+                        (newValue / capacity) * 100 :
+                        0;
+
+                    progressEl.style.width = percent + '%';
+
+                    if (newValue >= capacity) {
+
+                        progressEl.classList.remove('bg-emerald-500');
+                        progressEl.classList.add('bg-red-500');
+
+                    } else {
+
+                        progressEl.classList.remove('bg-red-500');
+                        progressEl.classList.add('bg-emerald-500');
+                    }
+                }
             }
 
             function showAnim(id, text, colorClass) {
@@ -378,9 +418,12 @@
             }
 
             initData();
-            setInterval(fetchData, 2000);
+            // setInterval(fetchData, 2000);
         </script>
         <script>
+            window.Echo.connector.pusher.connection.bind('connected', () => {
+                console.log('WebSocket Connected');
+            });
             window.Echo.channel('kandang-monitor')
                 .listen('.sensor.updated', (e) => {
 
@@ -398,5 +441,97 @@
                         humidityEl.innerText = e.data.humidity + "%";
                     }
                 });
+            window.Echo.channel('kandang-monitor')
+
+                .listen('.chicken.updated', (e) => {
+
+                    updateChicken(
+                        e.data.kandang_id,
+                        e.data.current_chicken
+                    );
+
+                })
+
+                .listen('.servo.updated', (e) => {
+
+                    let servoEl = document.getElementById(
+                        'servo-status-' + e.data.kandang_id
+                    );
+
+                    let servoCard = document.getElementById(
+                        'servo-card-' + e.data.kandang_id
+                    );
+
+                    if (servoEl) {
+                        servoEl.innerText = e.data.status;
+                    }
+
+                    if (servoCard) {
+
+                        if (e.data.status === 'TERBUKA') {
+
+                            servoCard.classList.remove(
+                                'bg-[#002855]',
+                                'border-[#002855]'
+                            );
+
+                            servoCard.classList.add(
+                                'bg-emerald-50',
+                                'border',
+                                'border-emerald-100'
+                            );
+
+                        } else {
+
+                            servoCard.classList.remove(
+                                'bg-emerald-50',
+                                'border-emerald-100'
+                            );
+
+                            servoCard.classList.add(
+                                'bg-[#002855]',
+                                'border',
+                                'border-[#002855]'
+                            );
+                        }
+                    }
+
+                })
+
+                .listen('.light.updated', (e) => {
+
+                    let lampEl = document.getElementById(
+                        'lamp-status-' + e.data.kandang_id
+                    );
+
+                    let lampCard = document.getElementById(
+                        'lamp-card-' + e.data.kandang_id
+                    );
+
+                    if (lampEl) {
+                        lampEl.innerText = e.data.status;
+                    }
+
+                    if (lampCard) {
+
+                        if (e.data.status === 'HIDUP') {
+
+                            lampCard.classList.add(
+                                'ring-1',
+                                'ring-orange-500',
+                                'bg-orange-50/30'
+                            );
+
+                        } else {
+
+                            lampCard.classList.remove(
+                                'ring-1',
+                                'ring-orange-500',
+                                'bg-orange-50/30'
+                            );
+                        }
+                    }
+
+                })
         </script>
     @endsection

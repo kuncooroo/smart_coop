@@ -20,6 +20,8 @@ return new class extends Migration
             $table->boolean('auto_mode')->default(true);
             $table->boolean('notification_active')->default(true);
             $table->decimal('temp_threshold', 5, 2)->default(30.00);
+            $table->boolean('auto_mode')->default(0);
+            $table->timestamp('disabled_at')->nullable();
             $table->timestamps();
         });
     }

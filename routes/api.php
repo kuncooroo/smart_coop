@@ -57,8 +57,7 @@ Route::post('/device/control', function (Request $request) {
 
     $type = strtoupper($request->type);
     $action = strtoupper($request->action);
-
-    // FIX TOPIC
+    
     if ($type == 'SERVO') {
 
         $topic = "kandang/{$device->kandang->code}/servo";

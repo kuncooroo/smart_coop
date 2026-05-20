@@ -20,7 +20,6 @@ class CheckDeviceStatus extends Command
             if (!$device->last_updated) {
                 $device->update([
                     'connection_status' => 'offline',
-                    'device_state' => 'error', 
                     'health_status' => 'CRITICAL',
                     'signal_strength' => 0,
                 ]);
@@ -32,14 +31,12 @@ class CheckDeviceStatus extends Command
             if ($minutes >= 2) {
                 $device->update([
                     'connection_status' => 'offline',
-                    'device_state' => 'error',
                     'health_status' => 'CRITICAL',
                     'signal_strength' => 0,
                 ]);
             } else {
                 $device->update([
                     'connection_status' => 'online',
-                    'device_state' => 'active',
                     'health_status' => 'EXCELLENT',
                 ]);
             }

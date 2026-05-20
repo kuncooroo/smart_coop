@@ -19,9 +19,9 @@ class MonitoringController extends Controller
                 $query->latest()->limit(1);
             }
         ])
-        ->where('user_id', auth()->id())
-        ->latest()
-        ->get();
+            ->where('user_id', auth()->id())
+            ->latest()
+            ->get();
 
         return view('Public.monitoring.index', compact('kandangs'));
     }
@@ -107,7 +107,6 @@ class MonitoringController extends Controller
 
             $data['image'] = $request->file('image')
                 ->store('kandang', 'public');
-
         } elseif ($request->remove_image == "1") {
 
             if ($kandang->image) {
@@ -116,6 +115,18 @@ class MonitoringController extends Controller
 
             $data['image'] = null;
         }
+        DeviceSetting::updateOrCreate(
+            [
+                'kandang_id' => $kandang->id
+            ],
+            [
+                'timer_open'  => $request->timer_open,
+                'timer_close' => $request->timer_close,
+                'is_set'      => true,
+                'auto_mode'   => 1,
+                'disabled_at' => null
+            ]
+        );
 
         $kandang->update($data);
 
@@ -123,7 +134,20 @@ class MonitoringController extends Controller
             ->route('monitoring.index')
             ->with('success', 'Profil kandang berhasil diperbarui!');
     }
+    public function disableSchedule($kandang_id)
+    {
+        $setting = DeviceSetting::where('kandang_id', $kandang_id)->first();
 
+        if ($setting) {
+            $setting->update([
+                'auto_mode' => 0,
+                'is_set' => 0,
+                'disabled_at' => now(),
+            ]);
+        }
+
+        return back()->with('success', 'Schedule dimatikan!');
+    }
     public function destroy($id)
     {
         $kandang = Kandang::where('user_id', auth()->id())

@@ -16,6 +16,7 @@ use App\Services\MqttService;
 use App\Models\Device;
 use Illuminate\Http\Request;
 use App\Events\SensorUpdated;
+
 // use App\Models\Command;
 // use Illuminate\Http\Request;
 
@@ -169,6 +170,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/api/kandang', function () {
         return \App\Models\Kandang::select('id', 'current_chicken')->get();
     });
+    Route::put(
+        '/settings/{kandang_id}/disable',
+        [MonitoringController::class, 'disableSchedule']
+    )->name('settings.disable');
 });
 
 Route::prefix('admin')->name('admin.')->group(function () {
