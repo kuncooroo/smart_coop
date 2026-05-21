@@ -53,7 +53,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/activity_log', [ActivityLogController::class, 'index'])->name('activity_log');
     Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
     Route::get('/laporan/export', [LaporanController::class, 'export'])->name('laporan.export');
-    Route::put('/settings/{kandang_id}', [MonitoringController::class, 'update'])->name('settings.update');
+    // Route::put('/settings/{kandang_id}', [MonitoringController::class, 'update'])->name('settings.update');
     Route::get('/notifikasi', [DashboardController::class, 'notifikasi'])->name('notifikasi');
     Route::post('/notif-read', function () {
         auth()->user()->unreadNotifications->markAsRead();
@@ -209,4 +209,15 @@ Route::get('/test-websocket', function () {
     ]));
 
     return 'OK';
+});
+
+Route::get('/test-ws', function () {
+
+    event(new SensorUpdated([
+        'kandang_id' => 1,
+        'temperature' => 30,
+        'humidity' => 80
+    ]));
+
+    return 'ok';
 });

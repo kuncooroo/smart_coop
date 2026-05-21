@@ -3,13 +3,17 @@
     <style>
         @keyframes floatUp {
             0% {
+                opacity: 0;
+                transform: translate(-50%, 10px);
+            }
+
+            20% {
                 opacity: 1;
-                transform: translate(-50%, 0);
             }
 
             100% {
                 opacity: 0;
-                transform: translate(-50%, -20px);
+                transform: translate(-50%, -25px);
             }
         }
 
@@ -110,10 +114,12 @@
                                 <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">Kapasitas
                                     Kandang</p>
 
-                                <div id="progress-{{ $k->id }}"
-                                    class="h-2 rounded-full 
-{{ $k->current_chicken >= $k->capacity ? 'bg-red-500' : 'bg-emerald-500' }}"
-                                    style="width: {{ $k->capacity > 0 ? ($k->current_chicken / $k->capacity) * 100 : 0 }}%">
+                                <div class="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+                                    <div id="progress-{{ $k->id }}"
+                                        class="h-full rounded-full transition-all duration-500
+        {{ $k->current_chicken >= $k->capacity ? 'bg-red-500' : 'bg-emerald-500' }}"
+                                        style="width: {{ $k->capacity > 0 ? ($k->current_chicken / $k->capacity) * 100 : 0 }}%">
+                                    </div>
                                 </div>
                                 <div class="flex justify-between mt-1 text-[10px] font-bold text-slate-500">
                                     <div class="relative">
@@ -406,11 +412,21 @@
             }
 
             function showAnim(id, text, colorClass) {
+
                 let el = document.getElementById('chicken-anim-' + id);
+
                 if (!el) return;
 
+                // reset animasi dulu
+                el.className = '';
+                void el.offsetWidth;
+
                 el.innerText = text;
-                el.className = "absolute left-1/2 -translate-x-1/2 font-bold " + colorClass + " animate-plus";
+
+                el.className =
+                    "absolute left-1/2 -translate-x-1/2 text-sm font-bold pointer-events-none " +
+                    colorClass +
+                    " animate-plus";
 
                 setTimeout(() => {
                     el.innerText = '';
@@ -421,117 +437,71 @@
             // setInterval(fetchData, 2000);
         </script>
         <script>
-            window.Echo.connector.pusher.connection.bind('connected', () => {
-                console.log('WebSocket Connected');
+            document.addEventListener("DOMContentLoaded", function() {
+
+                if (!window.Echo) {
+                    console.error("Echo belum loaded");
+                    return;
+                }
+
+                console.log("Echo Ready");
+
+                window.Echo.channel('kandang-monitor')
+
+                    .listen('.sensor.updated', (e) => {
+
+                        console.log("Realtime:", e);
+
+                        let tempEl = document.getElementById(
+                            'temp-' + e.data.kandang_id
+                        );
+
+                        if (tempEl) {
+                            tempEl.innerText = e.data.temperature + "°C";
+                        }
+
+                        let humidityEl = document.getElementById(
+                            'humidity-' + e.data.kandang_id
+                        );
+
+                        if (humidityEl) {
+                            humidityEl.innerText = e.data.humidity + "%";
+                        }
+                    })
+
+                    .listen('.chicken.updated', (e) => {
+
+                        updateChicken(
+                            e.data.kandang_id,
+                            e.data.current_chicken
+                        );
+
+                    })
+
+                    .listen('.servo.updated', (e) => {
+
+                        let servoEl = document.getElementById(
+                            'servo-status-' + e.data.kandang_id
+                        );
+
+                        if (servoEl) {
+                            servoEl.innerText = e.data.status;
+                        }
+
+                    })
+
+                    .listen('.light.updated', (e) => {
+
+                        let lampEl = document.getElementById(
+                            'lamp-status-' + e.data.kandang_id
+                        );
+
+                        if (lampEl) {
+                            lampEl.innerText = e.data.status;
+                        }
+
+                    });
+
             });
-            window.Echo.channel('kandang-monitor')
-                .listen('.sensor.updated', (e) => {
-
-                    console.log("Realtime:", e);
-
-                    let tempEl = document.getElementById(
-                        'temp-' + e.data.kandang_id
-                    );
-
-                    if (tempEl) {
-                        tempEl.innerText = e.data.temperature + "°C";
-                    }
-                    let humidityEl = document.getElementById('humidity-' + e.data.kandang_id);
-                    if (humidityEl && e.data.humidity) {
-                        humidityEl.innerText = e.data.humidity + "%";
-                    }
-                });
-            window.Echo.channel('kandang-monitor')
-
-                .listen('.chicken.updated', (e) => {
-
-                    updateChicken(
-                        e.data.kandang_id,
-                        e.data.current_chicken
-                    );
-
-                })
-
-                .listen('.servo.updated', (e) => {
-
-                    let servoEl = document.getElementById(
-                        'servo-status-' + e.data.kandang_id
-                    );
-
-                    let servoCard = document.getElementById(
-                        'servo-card-' + e.data.kandang_id
-                    );
-
-                    if (servoEl) {
-                        servoEl.innerText = e.data.status;
-                    }
-
-                    if (servoCard) {
-
-                        if (e.data.status === 'TERBUKA') {
-
-                            servoCard.classList.remove(
-                                'bg-[#002855]',
-                                'border-[#002855]'
-                            );
-
-                            servoCard.classList.add(
-                                'bg-emerald-50',
-                                'border',
-                                'border-emerald-100'
-                            );
-
-                        } else {
-
-                            servoCard.classList.remove(
-                                'bg-emerald-50',
-                                'border-emerald-100'
-                            );
-
-                            servoCard.classList.add(
-                                'bg-[#002855]',
-                                'border',
-                                'border-[#002855]'
-                            );
-                        }
-                    }
-
-                })
-
-                .listen('.light.updated', (e) => {
-
-                    let lampEl = document.getElementById(
-                        'lamp-status-' + e.data.kandang_id
-                    );
-
-                    let lampCard = document.getElementById(
-                        'lamp-card-' + e.data.kandang_id
-                    );
-
-                    if (lampEl) {
-                        lampEl.innerText = e.data.status;
-                    }
-
-                    if (lampCard) {
-
-                        if (e.data.status === 'HIDUP') {
-
-                            lampCard.classList.add(
-                                'ring-1',
-                                'ring-orange-500',
-                                'bg-orange-50/30'
-                            );
-
-                        } else {
-
-                            lampCard.classList.remove(
-                                'ring-1',
-                                'ring-orange-500',
-                                'bg-orange-50/30'
-                            );
-                        }
-                    }
-
-                })
         </script>
     @endsection
