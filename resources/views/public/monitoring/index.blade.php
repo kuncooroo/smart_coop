@@ -3,13 +3,17 @@
     <style>
         @keyframes floatUp {
             0% {
+                opacity: 0;
+                transform: translate(-50%, 10px);
+            }
+
+            20% {
                 opacity: 1;
-                transform: translate(-50%, 0);
             }
 
             100% {
                 opacity: 0;
-                transform: translate(-50%, -20px);
+                transform: translate(-50%, -25px);
             }
         }
 
@@ -110,10 +114,12 @@
                                 <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">Kapasitas
                                     Kandang</p>
 
-                                <div id="progress-{{ $k->id }}"
-                                    class="h-2 rounded-full 
-{{ $k->current_chicken >= $k->capacity ? 'bg-red-500' : 'bg-emerald-500' }}"
-                                    style="width: {{ $k->capacity > 0 ? ($k->current_chicken / $k->capacity) * 100 : 0 }}%">
+                                <div class="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+                                    <div id="progress-{{ $k->id }}"
+                                        class="h-full rounded-full transition-all duration-500
+        {{ $k->current_chicken >= $k->capacity ? 'bg-red-500' : 'bg-emerald-500' }}"
+                                        style="width: {{ $k->capacity > 0 ? ($k->current_chicken / $k->capacity) * 100 : 0 }}%">
+                                    </div>
                                 </div>
                                 <div class="flex justify-between mt-1 text-[10px] font-bold text-slate-500">
                                     <div class="relative">
@@ -130,7 +136,7 @@
                             </div>
                         </div>
 
-                        <div
+                        <div id="servo-card-{{ $k->id }}"
                             class="p-4 rounded-2xl flex items-center justify-between {{ $servo && $servo->door_status == 'TERBUKA' ? 'bg-emerald-50 border border-emerald-100' : 'bg-[#002855] border border-[#002855]' }} transition-all">
                             <div class="flex items-center space-x-3">
                                 <div
@@ -167,7 +173,7 @@
                             @endif
                         </div>
 
-                        <div
+                        <div id="lamp-card-{{ $k->id }}"
                             class="p-4 rounded-2xl bg-white flex items-center justify-between border border-slate-100 {{ $lamp && $lamp->light_status == 'HIDUP' ? 'ring-1 ring-orange-500 bg-orange-50/30' : '' }}">
                             <div class="flex items-center space-x-3">
                                 <div
@@ -215,6 +221,14 @@
                                             {{ \Carbon\Carbon::parse($setting->timer_close)->format('H:i') }}
                                         </span>
                                     </div>
+                                    <form action="{{ route('settings.disable', $k->id) }}" method="POST">
+                                        @csrf
+                                        @method('PUT')
+
+                                        <button class="text-red-500 text-xs font-bold">
+                                            Matikan Schedule
+                                        </button>
+                                    </form>
                                 </div>
                             @else
                                 <div>
@@ -320,37 +334,38 @@
                     });
             }
 
-            function fetchData() {
-                fetch('/api/kandang')
-                    .then(res => res.json())
-                    .then(data => {
+            // function fetchData() {
+            //     fetch('/api/kandang')
+            //         .then(res => res.json())
+            //         .then(data => {
 
-                        data.forEach(k => {
+            //             data.forEach(k => {
 
-                            updateChicken(k.id, k.current_chicken);
+            //                 updateChicken(k.id, k.current_chicken);
 
-                            let servoStatus = document.getElementById(
-                                'servo-status-' + k.id
-                            );
+            //                 let servoStatus = document.getElementById(
+            //                     'servo-status-' + k.id
+            //                 );
 
-                            if (servoStatus && k.servo_status) {
-                                servoStatus.innerText = k.servo_status;
-                            }
+            //                 if (servoStatus && k.servo_status) {
+            //                     servoStatus.innerText = k.servo_status;
+            //                 }
 
-                            let lampStatus = document.getElementById(
-                                'lamp-status-' + k.id
-                            );
+            //                 let lampStatus = document.getElementById(
+            //                     'lamp-status-' + k.id
+            //                 );
 
-                            if (lampStatus && k.light_status) {
-                                lampStatus.innerText = k.light_status;
-                            }
+            //                 if (lampStatus && k.light_status) {
+            //                     lampStatus.innerText = k.light_status;
+            //                 }
 
-                        });
+            //             });
 
-                    });
-            }
+            //         });
+            // }
 
             function updateChicken(id, newValue) {
+
                 let oldValue = previousCounts[id] ?? newValue;
 
                 if (newValue > oldValue) {
@@ -362,15 +377,56 @@
                 previousCounts[id] = newValue;
 
                 let countEl = document.getElementById('chicken-count-' + id);
-                if (countEl) countEl.innerText = newValue;
+
+                if (countEl) {
+                    countEl.innerText = newValue;
+                }
+
+                let progressEl = document.getElementById('progress-' + id);
+
+                if (progressEl) {
+
+                    let maxText = progressEl.parentElement
+                        .querySelector('.flex.justify-between span:last-child')
+                        .innerText;
+
+                    let capacity = parseInt(maxText);
+
+                    let percent = capacity > 0 ?
+                        (newValue / capacity) * 100 :
+                        0;
+
+                    progressEl.style.width = percent + '%';
+
+                    if (newValue >= capacity) {
+
+                        progressEl.classList.remove('bg-emerald-500');
+                        progressEl.classList.add('bg-red-500');
+
+                    } else {
+
+                        progressEl.classList.remove('bg-red-500');
+                        progressEl.classList.add('bg-emerald-500');
+                    }
+                }
             }
 
             function showAnim(id, text, colorClass) {
+
                 let el = document.getElementById('chicken-anim-' + id);
+
                 if (!el) return;
 
+                // reset animasi dulu
+                el.className = '';
+                void el.offsetWidth;
+
                 el.innerText = text;
-                el.className = "absolute left-1/2 -translate-x-1/2 font-bold " + colorClass + " animate-plus";
+
+                el.className =
+                    "absolute left-1/2 -translate-x-1/2 text-sm font-bold pointer-events-none " +
+                    colorClass +
+                    " animate-plus";
 
                 setTimeout(() => {
                     el.innerText = '';
@@ -378,25 +434,74 @@
             }
 
             initData();
-            setInterval(fetchData, 2000);
+            // setInterval(fetchData, 2000);
         </script>
         <script>
-            window.Echo.channel('kandang-monitor')
-                .listen('.sensor.updated', (e) => {
+            document.addEventListener("DOMContentLoaded", function() {
 
-                    console.log("Realtime:", e);
+                if (!window.Echo) {
+                    console.error("Echo belum loaded");
+                    return;
+                }
 
-                    let tempEl = document.getElementById(
-                        'temp-' + e.data.kandang_id
-                    );
+                console.log("Echo Ready");
 
-                    if (tempEl) {
-                        tempEl.innerText = e.data.temperature + "°C";
-                    }
-                    let humidityEl = document.getElementById('humidity-' + e.data.kandang_id);
-                    if (humidityEl && e.data.humidity) {
-                        humidityEl.innerText = e.data.humidity + "%";
-                    }
-                });
+                window.Echo.channel('kandang-monitor')
+
+                    .listen('.sensor.updated', (e) => {
+
+                        console.log("Realtime:", e);
+
+                        let tempEl = document.getElementById(
+                            'temp-' + e.data.kandang_id
+                        );
+
+                        if (tempEl) {
+                            tempEl.innerText = e.data.temperature + "°C";
+                        }
+
+                        let humidityEl = document.getElementById(
+                            'humidity-' + e.data.kandang_id
+                        );
+
+                        if (humidityEl) {
+                            humidityEl.innerText = e.data.humidity + "%";
+                        }
+                    })
+
+                    .listen('.chicken.updated', (e) => {
+
+                        updateChicken(
+                            e.data.kandang_id,
+                            e.data.current_chicken
+                        );
+
+                    })
+
+                    .listen('.servo.updated', (e) => {
+
+                        let servoEl = document.getElementById(
+                            'servo-status-' + e.data.kandang_id
+                        );
+
+                        if (servoEl) {
+                            servoEl.innerText = e.data.status;
+                        }
+
+                    })
+
+                    .listen('.light.updated', (e) => {
+
+                        let lampEl = document.getElementById(
+                            'lamp-status-' + e.data.kandang_id
+                        );
+
+                        if (lampEl) {
+                            lampEl.innerText = e.data.status;
+                        }
+
+                    });
+
+            });
         </script>
     @endsection

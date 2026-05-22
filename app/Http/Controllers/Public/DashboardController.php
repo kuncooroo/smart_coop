@@ -26,30 +26,27 @@ class DashboardController extends Controller
             0;
 
         $totalDevicesCount = Device::whereIn('kandang_id', $kandangIds)->count();
-        
         $totalServoCount = Device::whereIn('kandang_id', $kandangIds)
-            ->where('device_type', 'SERVO')
+            ->where('component_type', 'servo')
             ->count();
 
         $onlineDevicesCount = Device::whereIn('kandang_id', $kandangIds)
-            ->where('status', 'online')
+            ->where('connection_status', 'online')
             ->count();
 
         $totalKandangCount = Kandang::where('user_id', $userId)->count();
-
         $activeKandangCount = Kandang::where('user_id', $userId)
             ->whereHas('devices', function ($q) {
-                $q->where('status', 'online');
+                $q->where('connection_status', 'online');
             })
             ->count();
 
         $openDoorsCount = Device::whereIn('kandang_id', $kandangIds)
-            ->where('device_type', 'SERVO')
+            ->where('component_type', 'servo')
             ->where('door_status', 'TERBUKA')
             ->count();
 
         $anyDoorOpen = $openDoorsCount > 0;
-
         $latestDetections = Deteksi::with(['kandang', 'device'])
             ->whereIn('kandang_id', $kandangIds)
             ->latest()
@@ -67,10 +64,5 @@ class DashboardController extends Controller
             'anyDoorOpen',
             'latestDetections'
         ));
-    }
-
-    public function notifikasi()
-    {
-        return view('Public.notifikasi');
     }
 }
