@@ -181,6 +181,8 @@ class MonitoringController extends Controller
                 'timer_open'  => $request->timer_open,
                 'timer_close' => $request->timer_close,
                 'is_set'      => true,
+                'auto_mode'   => 1,
+                'disabled_at' => null,
             ]
         );
 
