@@ -19,7 +19,7 @@ return new class extends Migration
             $table->float('confidence')->nullable();
             $table->boolean('is_valid')->default(false); //
             $table->string('image')->nullable();
-            $table->json('boxes')->nullable(); 
+            $table->json('boxes')->nullable();
             $table->timestamps();
         });
     }
